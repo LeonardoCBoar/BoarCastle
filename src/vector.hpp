@@ -128,14 +128,31 @@ public:
 };
 
 
+
+using CustomVector3u16 = boar::CustomVector3<uint16_t>;
+using CustomVector3u32 = boar::CustomVector3<uint32_t>;
+using CustomVector3i16 = boar::CustomVector3<int16_t>;
+using CustomVector3i32 = boar::CustomVector3<int16_t>;
+using CustomVector3d   = boar::CustomVector3<double>;
+using CustomVector3f   = boar::CustomVector3<float>;
+using Vector3f         = CustomVector3f;
+
+}
+
+namespace Vectors
+{
+    inline boar::CustomVector3d ZERO{0,0,0};
+    inline boar::CustomVector3d ONE {1,1,1};
+}
+
 template<class NumberT>
-std::ostream& operator <<(std::ostream& ostream, const CustomVector3<NumberT>& vector)
+std::ostream& operator <<(std::ostream& ostream, const boar::CustomVector3<NumberT>& vector)
 {
     return ostream << '(' << vector.x << ',' << vector.y << ',' << vector.z << ')';
 }
 
 template<class NumberT>
-Vector3 operator + (const Vector3 vector, const CustomVector3<NumberT>& other)
+Vector3 operator + (const Vector3 vector, const boar::CustomVector3<NumberT>& other)
 {
     return Vector3
     {
@@ -146,7 +163,7 @@ Vector3 operator + (const Vector3 vector, const CustomVector3<NumberT>& other)
 }
 
 template<class NumberT>
-Vector3 operator += (Vector3 vector, const CustomVector3<NumberT>& other)
+Vector3 operator += (Vector3 vector, const boar::CustomVector3<NumberT>& other)
 {
     vector.x += other.x;
     vector.y += other.y;
@@ -154,23 +171,14 @@ Vector3 operator += (Vector3 vector, const CustomVector3<NumberT>& other)
     return vector;
 }
 
-using CustomVector3u16 = boar::CustomVector3<uint16_t>;
-using CustomVector3u32 = boar::CustomVector3<uint32_t>;
-using CustomVector3i16 = boar::CustomVector3<int16_t>;
-using CustomVector3i32 = boar::CustomVector3<int16_t>;
-using CustomVector3d   = boar::CustomVector3<double>;
-using CustomVector3f   = boar::CustomVector3<float>;
-using Vector3f         = CustomVector3f;
-
-namespace Vectors
+template<class NumberT>
+Vector3 operator * (const Vector3 vector, const NumberT multiplier)
 {
-    inline CustomVector3d ZERO{0,0,0};
-    inline CustomVector3d ONE {1,1,1};
+    return Vector3
+    {
+        vector.x * multiplier,
+        vector.y * multiplier,
+        vector.z * multiplier
+    };
 }
-
-}
-
-
-
-
 
