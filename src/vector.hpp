@@ -35,17 +35,17 @@ public:
     }
 
     template<typename OtherNumberT>
-    bool operator == (const CustomVector3<OtherNumberT>& other) const
+    inline bool operator == (const CustomVector3<OtherNumberT>& other) const
     {
         return this->x == other.x && this->y == other.y && this->z == other.z;
     }
 
-    CustomVector3<NumberT> operator + (const CustomVector3<NumberT>& other) const
+    inline CustomVector3<NumberT> operator + (const CustomVector3<NumberT>& other) const
     {
         return CustomVector3<NumberT>(this->x + other.x, this->y + other.y, this->z + other.z);
     }
     
-    CustomVector3<NumberT>& operator += (const CustomVector3<NumberT>& other)
+    inline CustomVector3<NumberT>& operator += (const CustomVector3<NumberT>& other)
     {
         this->x += other.x;
         this->y += other.y;
@@ -53,64 +53,75 @@ public:
         return *this;
     }
 
-    CustomVector3<NumberT> operator - (const CustomVector3<NumberT>& other) const
+    inline CustomVector3<NumberT> operator - (const CustomVector3<NumberT>& other) const
     {
         return CustomVector3<NumberT>(this->x - other.x, this->y - other.y, this->z - other.z);
     }
 
-    CustomVector3<NumberT> operator - () const
+    inline CustomVector3<NumberT> operator - () const
     {
         return CustomVector3<NumberT>(-this->x,-this->y,-this->z);
     }
 
-    CustomVector3<NumberT> operator * (const CustomVector3<NumberT>& other) const
+    inline CustomVector3<NumberT> operator * (const CustomVector3<NumberT>& other) const
     {
         return CustomVector3<NumberT>(this->x * other.x, this->y * other.y, this->z * other.z);
     }
 
     template<typename OtherNumberT>
-    CustomVector3<NumberT> operator * (const OtherNumberT& number) const
+    inline CustomVector3<NumberT> operator * (const OtherNumberT& number) const
     {
         return CustomVector3<NumberT>(this->x * number, this->y * number, this->z * number);
     }
 
-    CustomVector3<NumberT> operator / (const CustomVector3<NumberT>& other) const
+    inline CustomVector3<NumberT> operator / (const CustomVector3<NumberT>& other) const
     {
         return CustomVector3<NumberT>(this->x / other.x, this->y / other.y, this->z / other.z);
     }
 
     template<typename OtherNumberT>
-    CustomVector3<NumberT> operator / (const OtherNumberT& number) const
+    inline CustomVector3<NumberT> operator / (const OtherNumberT& number) const
     {
         return CustomVector3<NumberT>(this->x / number, this->y / number, this->z / number);
     }
 
-    NumberT dot(const CustomVector3<NumberT>& other) const
+    inline NumberT dot(const CustomVector3<NumberT>& other) const
     {
         return (this->x * other.x) + (this->y * other.y) + (this->z * other.z);
     }
 
-    double cos_between(const CustomVector3<NumberT>& other) const
+    inline double cos_between(const CustomVector3<NumberT>& other) const
     {
         return this->dot(other)/(this->length() * other.length());
     }
 
-    double angle_to(const CustomVector3<NumberT>& other) const
+    inline double angle_to(const CustomVector3<NumberT>& other) const
     {
         return acos(this->cos_between(other));
     }
 
-    double distance_to(const CustomVector3<NumberT>& other) const
+    inline double distance_to(const CustomVector3<NumberT>& other) const
     {
         return (*this-other).length();
     }
 
-    double length() const
+    inline double length() const
     {
         return sqrt( (this->x*this->x) + (this->y*this->y) + (this->z*this->z) );
     }
 
-    CustomVector3<NumberT> normalized() const
+    template<class IntegerNumberT>
+    inline CustomVector3<IntegerNumberT> to_index(const IntegerNumberT step_size) const
+    {
+        return CustomVector3<IntegerNumberT>
+        {
+            static_cast<IntegerNumberT>(this->x) / step_size,
+            static_cast<IntegerNumberT>(this->y) / step_size,
+            static_cast<IntegerNumberT>(this->z) / step_size,
+        };
+    }
+
+    inline CustomVector3<NumberT> normalized() const
     {
         const double length = this->length();
         return CustomVector3<NumberT>
@@ -121,7 +132,7 @@ public:
         };
     }
 
-    operator Vector3() const
+    inline operator Vector3() const
     {
         return Vector3{this->x, this->y, this->z};
     }
@@ -146,13 +157,23 @@ namespace Vectors
 }
 
 template<class NumberT>
-std::ostream& operator <<(std::ostream& ostream, const boar::CustomVector3<NumberT>& vector)
+inline std::ostream& operator <<(std::ostream& ostream, const boar::CustomVector3<NumberT>& vector)
 {
     return ostream << '(' << vector.x << ',' << vector.y << ',' << vector.z << ')';
 }
 
 template<class NumberT>
-Vector3 operator + (const Vector3 vector, const boar::CustomVector3<NumberT>& other)
+inline Vector3 operator + (const Vector3 vector, const boar::CustomVector3<NumberT>& other)
+{
+    return Vector3
+    {
+        vector.x + other.x,
+        vector.y + other.y,
+        vector.z + other.z
+    };
+}
+
+inline Vector3 operator + (const Vector3 vector, Vector3 other)
 {
     return Vector3
     {
@@ -163,7 +184,7 @@ Vector3 operator + (const Vector3 vector, const boar::CustomVector3<NumberT>& ot
 }
 
 template<class NumberT>
-Vector3 operator += (Vector3 vector, const boar::CustomVector3<NumberT>& other)
+inline Vector3 operator += (Vector3 vector, const boar::CustomVector3<NumberT>& other)
 {
     vector.x += other.x;
     vector.y += other.y;
@@ -172,13 +193,13 @@ Vector3 operator += (Vector3 vector, const boar::CustomVector3<NumberT>& other)
 }
 
 template<class NumberT>
-Vector3 operator * (const Vector3 vector, const NumberT multiplier)
+inline Vector3 operator * (const Vector3 vector, const NumberT multiplier)
 {
     return Vector3
     {
-        vector.x * multiplier,
-        vector.y * multiplier,
-        vector.z * multiplier
+        static_cast<float>(vector.x * multiplier),
+        static_cast<float>(vector.y * multiplier),
+        static_cast<float>(vector.z * multiplier)
     };
 }
 
