@@ -2,7 +2,9 @@
 #include <raylib.h>
 
 #include "camera.hpp"
+#include "game_world/world.hpp"
 #include "vector.hpp"
+#include "interaction_modules/construction_manager.hpp"
 
 const int SCREEN_HEIGHT = 666;
 const int SCREEN_WIDTH  = 666;
@@ -11,33 +13,33 @@ const double CAMERA_SPEED = 10;
 
 int main(void)
 {
-    InitWindow(800, 450, "BoarCastle");
+    InitWindow(1280, 720, "BoarCastle");
 
-    HoverCamera camera{ {10, 10, -5} };
+    HoverCamera camera{ {500, 100, 500} };
+
+    ConstructionManager construction_manager{&camera};
 
     SetCameraMode(camera, CAMERA_FREE);
 
-    boar::Vector3f cube_pos{15.0f,0.0f,2.0f};
-    boar::Vector3f cube_pos2{0.0f,0.0f,5.0f};
-    boar::Vector3f cube_pos3{7.5f,0.0f,12.0f};
+
 
     while (!WindowShouldClose())
     {
-        camera.update(GetFrameTime());
-        //UpdateCamera(&camera);
+        const double delta_t = GetFrameTime();
+        camera.update(delta_t);
+
+        construction_manager.update();
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
 
             BeginMode3D(camera);
 
-                DrawCube(cube_pos, 2.0f, 2.0f, 2.0f, RED);
-                DrawCube(cube_pos2, 2.0f, 2.0f, 2.0f, BLUE);
-                DrawCube(cube_pos3, 2.0f, 2.0f, 2.0f, GREEN);
-                DrawCubeWires(cube_pos, 2.0f, 2.0f, 2.0f, MAROON);
-                DrawCubeWires(cube_pos2, 2.0f, 2.0f, 2.0f, MAROON);
-                DrawCubeWires(cube_pos3, 2.0f, 2.0f, 2.0f, MAROON);
-                DrawGrid(100, 1.0f);
+                //DrawPlane({500,0,500}, {1000,1000}, Color{0,50,0,255});
+                DrawGrid(2000, 5.0f);
+
+                construction_manager.render();
+                game_world.render();
 
             EndMode3D();
 

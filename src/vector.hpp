@@ -1,13 +1,31 @@
 #pragma once
 
+#include <cstdint>
 #include <math.h>
 #include <iostream>
 #include <ostream>
 
 #include <raylib.h>
+#include <sys/types.h>
 static int conversions = 0;
 namespace boar
 {
+
+template <class NumberT>
+class CustomVector2
+{
+public:
+    NumberT x;
+    NumberT z;
+
+    constexpr CustomVector2(const NumberT x, const NumberT z)
+        :x{x}, z{z} 
+    {
+
+    }
+};
+
+using IndexVector2 = CustomVector2<uint32_t>;
 
 template<class NumberT>
 class CustomVector3 
@@ -17,18 +35,18 @@ public:
     NumberT y = 0;
     NumberT z = 0;
 
-    CustomVector3()
+    constexpr CustomVector3()
     {
 
     }
 
-    CustomVector3(const Vector3 other)
+    constexpr CustomVector3(const Vector3 other)
         :x{other.x}, y{other.y}, z{other.z}
     {
 
     }
 
-    CustomVector3(const NumberT x,const NumberT y, const NumberT z)
+    constexpr CustomVector3(const NumberT x,const NumberT y, const NumberT z)
     : x{x},y{y},z{z}
     {
 
@@ -110,14 +128,23 @@ public:
         return sqrt( (this->x*this->x) + (this->y*this->y) + (this->z*this->z) );
     }
 
-    template<class IntegerNumberT>
-    inline CustomVector3<IntegerNumberT> to_index(const IntegerNumberT step_size) const
+    inline CustomVector3<uint32_t> to_index(const uint32_t step_size) const
     {
-        return CustomVector3<IntegerNumberT>
+        return CustomVector3<uint32_t>
         {
-            static_cast<IntegerNumberT>(this->x) / step_size,
-            static_cast<IntegerNumberT>(this->y) / step_size,
-            static_cast<IntegerNumberT>(this->z) / step_size,
+            static_cast<uint32_t>(this->x) / step_size,
+            0,
+            static_cast<uint32_t>(this->z) / step_size,
+        };
+    }
+    
+    inline CustomVector3<double> to_global_center(const double step_size) const
+    {
+        return CustomVector3<double>
+        {
+            static_cast<double>(this->x) * step_size + step_size/2,
+            static_cast<double>(this->y) * step_size,
+            static_cast<double>(this->z) * step_size + step_size/2,
         };
     }
 
@@ -134,26 +161,34 @@ public:
 
     inline operator Vector3() const
     {
-        return Vector3{this->x, this->y, this->z};
+        return Vector3
+        {
+            static_cast<float>(this->x),
+            static_cast<float>(this->y),
+            static_cast<float>(this->z),
+        };
+    }
+
+    inline CustomVector2<uint32_t>index_vector() const
+    {
+        return IndexVector2{this->x, this->z};
     }
 };
 
-
-
-using CustomVector3u16 = boar::CustomVector3<uint16_t>;
-using CustomVector3u32 = boar::CustomVector3<uint32_t>;
-using CustomVector3i16 = boar::CustomVector3<int16_t>;
-using CustomVector3i32 = boar::CustomVector3<int16_t>;
-using CustomVector3d   = boar::CustomVector3<double>;
-using CustomVector3f   = boar::CustomVector3<float>;
-using Vector3f         = CustomVector3f;
+using Vector3u16 = boar::CustomVector3<uint16_t>;
+using Vector3u32 = boar::CustomVector3<uint32_t>;
+using Vector3i16 = boar::CustomVector3<int16_t>;
+using Vector3i32 = boar::CustomVector3<int32_t>;
+using Vector3d   = boar::CustomVector3<double>;
+using Vector3f   = boar::CustomVector3<float>;
+using IndexVector3 = Vector3u32;
 
 }
 
 namespace Vectors
 {
-    inline boar::CustomVector3d ZERO{0,0,0};
-    inline boar::CustomVector3d ONE {1,1,1};
+    inline boar::Vector3d ZERO{0,0,0};
+    inline boar::Vector3d ONE {1,1,1};
 }
 
 template<class NumberT>
@@ -167,9 +202,9 @@ inline Vector3 operator + (const Vector3 vector, const boar::CustomVector3<Numbe
 {
     return Vector3
     {
-        vector.x + other.x,
-        vector.y + other.y,
-        vector.z + other.z
+        static_cast<float>(vector.x + other.x),
+        static_cast<float>(vector.y + other.y),
+        static_cast<float>(vector.z + other.z)
     };
 }
 
@@ -177,9 +212,9 @@ inline Vector3 operator + (const Vector3 vector, Vector3 other)
 {
     return Vector3
     {
-        vector.x + other.x,
-        vector.y + other.y,
-        vector.z + other.z
+        static_cast<float>(vector.x + other.x),
+        static_cast<float>(vector.y + other.y),
+        static_cast<float>(vector.z + other.z)
     };
 }
 
@@ -189,7 +224,7 @@ inline Vector3 operator += (Vector3 vector, const boar::CustomVector3<NumberT>& 
     vector.x += other.x;
     vector.y += other.y;
     vector.z += other.z;
-    return vector;
+    return static_cast<Vector3>(vector);
 }
 
 template<class NumberT>
@@ -202,4 +237,6 @@ inline Vector3 operator * (const Vector3 vector, const NumberT multiplier)
         static_cast<float>(vector.z * multiplier)
     };
 }
+
+
 

@@ -22,13 +22,16 @@ enum Orientation
 
 class HoverCamera : public Camera3D
 {
-    const double HOVER_SPEED = 10;
-    const double LIFT_SPEED = 300;
+    double HOVER_SPEED = 50;
+    double LIFT_SPEED = 300;
     const double ROTATION_SPEED = PI/6;
+    const double MAX_ZOOM_OUT = 300;
+
     double current_camera_angle = 0;
+
     
 public:
-    HoverCamera(const boar::Vector3f position = {0,0,0});
+    HoverCamera(const boar::Vector3d position = {0,0,0});
 
     void update(const float delta_t);
 
@@ -38,6 +41,6 @@ private:
     void lift_camera(const double movement, const double delta_t);
 
     void set_camera_angle(const double new_angle);
-    const boar::Vector3f get_current_dir() const;
+    const boar::Vector3d get_current_dir() const;
 
 };

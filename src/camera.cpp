@@ -1,10 +1,10 @@
 #include "camera.hpp"
 #include "vector.hpp"
 
-HoverCamera::HoverCamera(const boar::Vector3f position)
+HoverCamera::HoverCamera(const boar::Vector3d position)
 {
     this->position = position;
-    this->up = boar::Vector3f{0,1,0};
+    this->up = boar::Vector3d{0,1,0};
     this->fovy = 45;
     this->projection = CAMERA_PERSPECTIVE;
 
@@ -32,8 +32,8 @@ void HoverCamera::update(const float delta_t)
 
 void HoverCamera::hover_camera(Direction dir_index, const double delta_t)
 {   
-    const boar::Vector3f current_dir = this->get_current_dir();
-    boar::Vector3f movement_dir = current_dir;
+    const boar::Vector3d current_dir = this->get_current_dir();
+    boar::Vector3d movement_dir = current_dir;
     
     switch (dir_index) 
     {
@@ -68,7 +68,7 @@ void HoverCamera::lift_camera(const double movement, const double delta_t)
     if(movement != 0)
     {
         this->position.y += movement * LIFT_SPEED * delta_t;
-        if(this->position.y > 100) this->position.y = 100;
+        if(this->position.y > this->MAX_ZOOM_OUT) this->position.y = MAX_ZOOM_OUT;
         else if(this->position.y < 1) this->position.y = 1;
 
         this->set_camera_angle(this->current_camera_angle);
@@ -79,19 +79,19 @@ void HoverCamera::lift_camera(const double movement, const double delta_t)
 void HoverCamera::set_camera_angle(const double new_angle)
 {
     this->current_camera_angle = new_angle;
-    const boar::Vector3f looking_dir
+    const boar::Vector3d looking_dir
     {
-        static_cast<float>(cos(new_angle)),
+        static_cast<double>(cos(new_angle)),
         -1,
-        static_cast<float>(sin(new_angle))
+        static_cast<double>(sin(new_angle))
     };
 
     this->target = this->position + looking_dir;
 }
 
-const boar::Vector3f HoverCamera::get_current_dir() const
+const boar::Vector3d HoverCamera::get_current_dir() const
 {
-    return boar::Vector3f
+    return boar::Vector3d
     {
         this->target.x - this->position.x,
         0,
