@@ -5,16 +5,17 @@
 #include <memory>
 
 #include "../vector.hpp"
-#include "collision_manager.hpp"
 
 class Wall;
 class CollisionManager;
+class Pathfinder;
 
 class World
 {
 
 public:
-    CollisionManager collision_manager{};
+    std::shared_ptr<CollisionManager> collision_manager;
+    std::shared_ptr<Pathfinder> pathfinder;
 
     World();
 
@@ -22,6 +23,7 @@ public:
     void render() const;
 
 private:
+    constexpr static const boar::IndexVector2 SIZE{600,600};
     std::vector<std::shared_ptr<Wall>> walls;
 
 };

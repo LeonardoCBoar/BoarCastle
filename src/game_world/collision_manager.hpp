@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 #include <memory>
 
 #include "../vector.hpp"
@@ -8,7 +9,7 @@
 class CollisionManager
 {
 private:
-    std::array<std::array<bool, 2000>, 2000> collision_matrix;
+    std::array<std::array<bool, 600>, 600> collision_matrix;
 
 public:
     template<class GameObject>
@@ -22,7 +23,7 @@ public:
         {
             for(size_t z = index.z - half_size_z; z < index.z + half_size_z + 1; z++)
             {
-                if(this->collision_matrix[x][z] == true)        
+                if(!this->is_tile_empty(x,z))        
                     return false;
             } 
         } 
@@ -52,13 +53,24 @@ private:
         return index.x < 0 || index.x < this->collision_matrix.size() || 
             index.z < 0 || index.z > this->collision_matrix.at(0).size();
     }
+    
+    bool is_inside_borders(const uint32_t x, const uint32_t z) const
+    {
+        return this->is_inside_borders(boar::IndexVector3{x,0,z});
+    }
 
     bool is_tile_empty(const boar::IndexVector3 index) const
     {
         if(!this->is_inside_borders(index))
             return false;
 
-        return collision_matrix.at(index.x).at(index.z);
+        return collision_matrix.at(index.x).at(index.z) == false;
     }
+    
+    bool is_tile_empty(const uint32_t x, const uint32_t z) const
+    {
+        return this->is_inside_borders(boar::IndexVector3{x,0,z});
+    }
+    
 };
 

@@ -187,8 +187,8 @@ using IndexVector3 = Vector3u32;
 
 namespace Vectors
 {
-    inline boar::Vector3d ZERO{0,0,0};
-    inline boar::Vector3d ONE {1,1,1};
+    inline boar::Vector3u32 ZERO{0,0,0};
+    inline boar::Vector3u32 ONE {1,1,1};
 }
 
 template<class NumberT>

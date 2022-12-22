@@ -6,10 +6,12 @@
 #include <memory>
 #include <ostream>
 #include <raylib.h>
+#include <type_traits>
 
 #include "../camera.hpp"
 #include "../game_world/game_objects/wall.hpp"
 #include "../game_world/world.hpp"
+#include "../game_world/collision_manager.hpp"
 
 
 ConstructionManager::ConstructionManager(const HoverCamera* const camera)
@@ -49,7 +51,7 @@ void ConstructionManager::handle_input()
 
 
     const boar::Vector3u32 half_wall_size = preview_wall->SIZE/2;
-    bool free_space = game_world.collision_manager.can_fit_object(preview_wall);
+    bool free_space = game_world.collision_manager->can_fit_object(preview_wall);
 
 
     if(free_space)
@@ -66,6 +68,7 @@ void ConstructionManager::handle_input()
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON) && free_space)
     {
         this->preview_wall->color = GRAY;
+        std::cout << this->preview_wall->position << std::endl;
         game_world.add_wall(this->preview_wall);
         this->create_preview_wall();
 

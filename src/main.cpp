@@ -5,21 +5,22 @@
 #include "game_world/world.hpp"
 #include "vector.hpp"
 #include "interaction_modules/construction_manager.hpp"
+#include <optional>
 
-const int SCREEN_HEIGHT = 666;
-const int SCREEN_WIDTH  = 666;
-
-const double CAMERA_SPEED = 10;
+const int SCREEN_WIDTH  = 1280;
+const int SCREEN_HEIGHT = 720;
 
 int main(void)
 {
-    InitWindow(1280, 720, "BoarCastle");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BoarCastle");
 
-    HoverCamera camera{ {500, 100, 500} };
+    HoverCamera camera{ {300, 100, 300} };
 
     ConstructionManager construction_manager{&camera};
 
     SetCameraMode(camera, CAMERA_FREE);
+    //SetTargetFPS(60);
+
 
 
 
@@ -36,7 +37,7 @@ int main(void)
             BeginMode3D(camera);
 
                 //DrawPlane({500,0,500}, {1000,1000}, Color{0,50,0,255});
-                DrawGrid(2000, 5.0f);
+                DrawGrid(1200/5, 5.0f);
 
                 construction_manager.render();
                 game_world.render();

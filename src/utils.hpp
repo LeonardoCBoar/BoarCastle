@@ -1,0 +1,59 @@
+#include <chrono>
+#include <string>
+#include <iostream>
+#include <unordered_map>
+
+class TimeMeasurer
+{
+
+public:
+    enum TimeUnit
+    {
+        MICROSECOND,
+        MILLISECOND,
+        SECOND
+    };
+
+    TimeMeasurer(std::string&& message = "", const TimeUnit time_unit = TimeUnit::MILLISECOND)
+        :message{message}, time_unit{time_unit}, start_time{std::chrono::high_resolution_clock::now()}
+    {
+    
+    }
+
+    auto get_time() const
+    {   
+        const auto current_time = std::chrono::high_resolution_clock::now();
+        const auto elapsed_time = current_time - this->start_time;
+        switch (this->time_unit) 
+        {
+            case MICROSECOND:
+                return std::chrono::duration_cast<std::chrono::microseconds>(elapsed_time).count();
+            case MILLISECOND:
+                return std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_time).count();
+            case SECOND:
+                return std::chrono::duration_cast<std::chrono::seconds>(elapsed_time).count();
+            default:
+                return std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_time).count();
+        }
+    }
+
+    void print_time() const
+    {
+        const auto elapsed_time = this->get_time();
+        std::cout << message << " in " << elapsed_time << this->unit_strings.at(this->time_unit) << std::endl;
+    }
+
+private:
+    const std::unordered_map<TimeUnit, std::string> unit_strings
+    {
+        {MICROSECOND, "us"},
+        {MILLISECOND, "ms"},
+        {SECOND, "s"},
+    };
+
+    std::string message;
+    TimeUnit time_unit;
+
+    std::chrono::system_clock::time_point start_time;
+
+};
