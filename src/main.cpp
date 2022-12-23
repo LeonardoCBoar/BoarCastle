@@ -14,7 +14,7 @@ int main(void)
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BoarCastle");
 
-    HoverCamera camera{ {300, 100, 300} };
+    HoverCamera camera{ {10, 100, 10} };
 
     ConstructionManager construction_manager{&camera};
 

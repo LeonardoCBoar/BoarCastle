@@ -20,13 +20,13 @@ ConstructionManager::ConstructionManager(const HoverCamera* const camera)
     this->create_preview_wall();
 }
 
-void ConstructionManager::create_preview_wall()
+void ConstructionManager::create_preview_wall(const boar::IndexVector3 mouse_index)
 {
-    this->preview_wall = std::make_shared<Wall>();
+    this->preview_wall = std::make_shared<Wall>(mouse_index);
     this->preview_wall->color.a = 125;
 }
 
-boar::Vector3u32 ConstructionManager::get_ground_intersection_index() const
+boar::Vector3d ConstructionManager::get_ground_intersection_point() const
 {
     const Ray mouse_ray = GetMouseRay(GetMousePosition(), *camera);
 
@@ -34,7 +34,7 @@ boar::Vector3u32 ConstructionManager::get_ground_intersection_index() const
     const double distance = (-mouse_ray.position.y) / mouse_ray.direction.y;
     const boar::Vector3d intersection_point = mouse_ray.position + mouse_ray.direction * distance;
 
-    return intersection_point.to_index(uint32_t{1});
+    return intersection_point;
 }
 
 void ConstructionManager::update()
@@ -44,10 +44,17 @@ void ConstructionManager::update()
 
 void ConstructionManager::handle_input()
 {
-    this->selected_tile = this->get_ground_intersection_index();
-    boar::Vector3d selected_tile_center = this->selected_tile.to_global_center(uint32_t{1});
+    const auto mouse_intersection_point = this->get_ground_intersection_point();
 
-    this->preview_wall->move_to(selected_tile_center);
+    if(!game_world.collision_manager->is_inside_borders(mouse_intersection_point))
+    {
+        this->preview_wall->visible = false;
+        return;
+    }
+
+    this->preview_wall->visible = true;
+    const auto selected_tile = mouse_intersection_point.to_index();
+    this->preview_wall->move_to(selected_tile);
 
 
     const boar::Vector3u32 half_wall_size = preview_wall->SIZE/2;
@@ -68,9 +75,8 @@ void ConstructionManager::handle_input()
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON) && free_space)
     {
         this->preview_wall->color = GRAY;
-        std::cout << this->preview_wall->position << std::endl;
         game_world.add_wall(this->preview_wall);
-        this->create_preview_wall();
+        this->create_preview_wall(selected_tile);
 
     }
 }

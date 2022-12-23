@@ -128,7 +128,7 @@ public:
         return sqrt( (this->x*this->x) + (this->y*this->y) + (this->z*this->z) );
     }
 
-    inline CustomVector3<uint32_t> to_index(const uint32_t step_size) const
+    inline CustomVector3<uint32_t> to_index(const uint32_t step_size = 1) const
     {
         return CustomVector3<uint32_t>
         {

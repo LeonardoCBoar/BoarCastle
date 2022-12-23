@@ -3,12 +3,12 @@
 #include <cstddef>
 #include <cstdint>
 
-Wall::Wall(const boar::Vector3d position)
+Wall::Wall(const boar::IndexVector3 position)
     :position{position}
 {
 }
 
-void Wall::move_to(const boar::Vector3d target)
+void Wall::move_to(const boar::IndexVector3 target)
 {
     this->position.x = target.x;
     this->position.y = SIZE.y/2;

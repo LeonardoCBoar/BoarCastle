@@ -14,6 +14,7 @@ class World
 {
 
 public:
+    constexpr static const boar::IndexVector2 SIZE{600,600};
     std::shared_ptr<CollisionManager> collision_manager;
     std::shared_ptr<Pathfinder> pathfinder;
 
@@ -23,7 +24,6 @@ public:
     void render() const;
 
 private:
-    constexpr static const boar::IndexVector2 SIZE{600,600};
     std::vector<std::shared_ptr<Wall>> walls;
 
 };
