@@ -5,6 +5,7 @@
 #include "game_world/world.hpp"
 #include "vector.hpp"
 #include "interaction_modules/construction_manager.hpp"
+#include "interaction_modules/unit_manager.hpp"
 #include <optional>
 
 const int SCREEN_WIDTH  = 1280;
@@ -17,6 +18,7 @@ int main(void)
     HoverCamera camera{ {10, 100, 10} };
 
     ConstructionManager construction_manager{&camera};
+    UnitMananger unit_manager{&camera};
 
     SetCameraMode(camera, CAMERA_FREE);
     //SetTargetFPS(60);
@@ -28,8 +30,10 @@ int main(void)
     {
         const double delta_t = GetFrameTime();
         camera.update(delta_t);
+        game_world.update();
 
         construction_manager.update();
+        unit_manager.update();
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
@@ -39,8 +43,9 @@ int main(void)
                 //DrawPlane({500,0,500}, {1000,1000}, Color{0,50,0,255});
                 DrawGrid(1200/5, 5.0f);
 
-                construction_manager.render();
                 game_world.render();
+                construction_manager.render();
+                unit_manager.render();
 
             EndMode3D();
 

@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <unordered_map>
+#include <vector>
 
 class TimeMeasurer
 {
@@ -57,3 +58,16 @@ private:
     std::chrono::system_clock::time_point start_time;
 
 };
+
+template<class ElementT>
+inline std::ostream& operator <<(std::ostream& ostream, const std::vector<ElementT>& vector)
+{
+    ostream << "[ ";
+    for(size_t i = 0; i < vector.size() - 1; i++)
+    {
+        ostream << vector[i] << ", ";
+    }
+    ostream << vector[vector.size()-1] << " ]\n";
+
+    return ostream;
+}

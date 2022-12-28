@@ -47,34 +47,38 @@ public:
         } 
     }
 
-    bool is_inside_borders(const boar::IndexVector3 index) const
+    template<class VectorT>
+    bool is_inside_borders(const VectorT point) const
     {
-        return index.x >= 0 && index.x < this->collision_matrix.size() && 
-               index.z >= 0 && index.z < this->collision_matrix.at(0).size();
-    }
-
-    bool is_inside_borders(const boar::Vector3d point) const
-    {
-        return point.x >= 0 && point.x < this->collision_matrix.size() && 
-               point.z >= 0 && point.z < this->collision_matrix.at(0).size();
+        return this->is_inside_borders
+        (
+            static_cast<uint32_t>(point.x),
+            static_cast<uint32_t>(point.z)
+        );
     }
     
     bool is_inside_borders(const uint32_t x, const uint32_t z) const
     {
-        return this->is_inside_borders(boar::IndexVector3{x,0,z});
+        return x >= 0 && x < this->collision_matrix.size() && 
+               z >= 0 && z < this->collision_matrix.at(0).size();
     }
 
-    bool is_tile_empty(const boar::IndexVector3 index) const
+    template<class VectorT>
+    bool is_tile_empty(const VectorT point) const
     {
-        if(!this->is_inside_borders(index))
-            return false;
-
-        return collision_matrix.at(index.x).at(index.z) == false;
+        return this->is_tile_empty
+        (
+            static_cast<uint32_t>(point.x),
+            static_cast<uint32_t>(point.z)
+        );
     }
     
     bool is_tile_empty(const uint32_t x, const uint32_t z) const
     {
-        return this->is_tile_empty(boar::IndexVector3{x,0,z});
+        if(!this->is_inside_borders(x,z))
+            return false;
+
+        return collision_matrix.at(x).at(z) == false;
     }
     
 };

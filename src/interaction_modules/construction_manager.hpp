@@ -19,8 +19,7 @@ public:
     void render() const;
 
 private:
-    void create_preview_wall(const boar::IndexVector3 mouse_index = boar::IndexVector3{0,0,0});
-    boar::Vector3d get_ground_intersection_point() const;
+    void create_preview_wall(const boar::IndexVector2 mouse_index = boar::IndexVector2{0,0});
     void handle_input();
 
 };

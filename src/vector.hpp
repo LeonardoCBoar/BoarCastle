@@ -18,12 +18,35 @@ public:
     NumberT x;
     NumberT z;
 
-    constexpr CustomVector2(const NumberT x, const NumberT z)
+    constexpr CustomVector2(const NumberT x = 0, const NumberT z = 0)
         :x{x}, z{z} 
     {
 
     }
+
+    inline bool operator==(const CustomVector2<NumberT> other) const
+    {
+        return this->x == other.x && this->z == other.z;
+    }
+
+    inline bool operator!=(const CustomVector2<NumberT> other) const
+    {
+        return this->x != other.x || this->z != other.z;
+    }
+
+    inline double manhattan_distance(const CustomVector2<NumberT> other)const
+    {
+        return abs(static_cast<double>(this->x) - static_cast<double>(other.x)) + 
+               abs(static_cast<double>(this->z) - static_cast<double>(other.z)); 
+
+    }
 };
+
+template<class NumberT>
+inline std::ostream& operator <<(std::ostream& ostream, const boar::CustomVector2<NumberT>& vector)
+{
+    return ostream << '(' << vector.x << ',' << vector.z << ")\n";
+}
 
 using IndexVector2 = CustomVector2<uint32_t>;
 
@@ -103,21 +126,6 @@ public:
         return CustomVector3<NumberT>(this->x / number, this->y / number, this->z / number);
     }
 
-    inline NumberT dot(const CustomVector3<NumberT>& other) const
-    {
-        return (this->x * other.x) + (this->y * other.y) + (this->z * other.z);
-    }
-
-    inline double cos_between(const CustomVector3<NumberT>& other) const
-    {
-        return this->dot(other)/(this->length() * other.length());
-    }
-
-    inline double angle_to(const CustomVector3<NumberT>& other) const
-    {
-        return acos(this->cos_between(other));
-    }
-
     inline double distance_to(const CustomVector3<NumberT>& other) const
     {
         return (*this-other).length();
@@ -134,6 +142,15 @@ public:
         {
             static_cast<uint32_t>(this->x) / step_size,
             0,
+            static_cast<uint32_t>(this->z) / step_size,
+        };
+    }
+    
+    inline CustomVector2<uint32_t> to_index2(const uint32_t step_size = 1) const
+    {
+        return CustomVector2<uint32_t>
+        {
+            static_cast<uint32_t>(this->x) / step_size,
             static_cast<uint32_t>(this->z) / step_size,
         };
     }
@@ -194,7 +211,7 @@ namespace Vectors
 template<class NumberT>
 inline std::ostream& operator <<(std::ostream& ostream, const boar::CustomVector3<NumberT>& vector)
 {
-    return ostream << '(' << vector.x << ',' << vector.y << ',' << vector.z << ')';
+    return ostream << '(' << vector.x << ',' << vector.y << ',' << vector.z << ")\n";
 }
 
 template<class NumberT>

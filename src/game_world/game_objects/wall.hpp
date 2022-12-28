@@ -28,11 +28,11 @@ public:
 
     Color color = GRAY;
 
-    boar::Vector3u32 position;
+    boar::IndexVector3 position;
     bool visible = true;
 
-    Wall(const boar::Vector3u32 position = {0,0,0});
-    void move_to(const boar::Vector3u32 target);
+    Wall(const boar::IndexVector2 position = {0,0});
+    void move_to(const boar::IndexVector2 target);
 
     void render() const;
 

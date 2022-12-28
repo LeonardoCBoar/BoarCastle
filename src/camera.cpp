@@ -13,6 +13,9 @@ HoverCamera::HoverCamera(const boar::Vector3d position)
 
 void HoverCamera::update(const float delta_t)
 {
+    this->current_mouse_pos = this->get_ground_intersection_point();
+    this->current_mouse_index = this->current_mouse_pos.to_index2();
+
     if(IsKeyDown('W') || IsKeyDown(KEY_UP))
         this->hover_camera( Direction::FRONT, delta_t);
     if(IsKeyDown('S') || IsKeyDown(KEY_DOWN))
@@ -29,6 +32,18 @@ void HoverCamera::update(const float delta_t)
 
     this->lift_camera(-GetMouseWheelMove(), delta_t);
 }
+
+boar::Vector3d HoverCamera::get_ground_intersection_point() const
+{
+    const Ray mouse_ray = GetMouseRay(GetMousePosition(), *this);
+
+    //Distance: Amount of dir vectors necessary to reach intersection point
+    const double distance = (-mouse_ray.position.y) / mouse_ray.direction.y;
+    const boar::Vector3d intersection_point = mouse_ray.position + mouse_ray.direction * distance;
+
+    return intersection_point;
+}
+
 
 void HoverCamera::hover_camera(Direction dir_index, const double delta_t)
 {   

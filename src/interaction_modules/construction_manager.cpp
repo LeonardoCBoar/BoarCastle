@@ -20,21 +20,10 @@ ConstructionManager::ConstructionManager(const HoverCamera* const camera)
     this->create_preview_wall();
 }
 
-void ConstructionManager::create_preview_wall(const boar::IndexVector3 mouse_index)
+void ConstructionManager::create_preview_wall(const boar::IndexVector2 mouse_index)
 {
     this->preview_wall = std::make_shared<Wall>(mouse_index);
     this->preview_wall->color.a = 125;
-}
-
-boar::Vector3d ConstructionManager::get_ground_intersection_point() const
-{
-    const Ray mouse_ray = GetMouseRay(GetMousePosition(), *camera);
-
-    //Distance: Amount of dir vectors necessary to reach intersection point
-    const double distance = (-mouse_ray.position.y) / mouse_ray.direction.y;
-    const boar::Vector3d intersection_point = mouse_ray.position + mouse_ray.direction * distance;
-
-    return intersection_point;
 }
 
 void ConstructionManager::update()
@@ -44,16 +33,18 @@ void ConstructionManager::update()
 
 void ConstructionManager::handle_input()
 {
-    const auto mouse_intersection_point = this->get_ground_intersection_point();
+    if(game_world.current_input_mode != World::InputMode::CONSTRUCTION)
+        return;
 
-    if(!game_world.collision_manager->is_inside_borders(mouse_intersection_point))
+    const auto selected_tile = camera->current_mouse_index;
+
+    if(!game_world.collision_manager->is_inside_borders(selected_tile))
     {
         this->preview_wall->visible = false;
         return;
     }
 
     this->preview_wall->visible = true;
-    const auto selected_tile = mouse_intersection_point.to_index();
     this->preview_wall->move_to(selected_tile);
 
 
@@ -83,6 +74,8 @@ void ConstructionManager::handle_input()
 
 void ConstructionManager::render() const
 {
+    if(game_world.current_input_mode != World::InputMode::CONSTRUCTION)
+        return;
     //Preview Wall
     this->preview_wall->render();
 }
