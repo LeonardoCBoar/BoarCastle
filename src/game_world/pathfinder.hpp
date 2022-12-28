@@ -7,7 +7,7 @@
 #include <math.h>
 #include <vector>
 
-#include "../vector.hpp"
+#include "../utils/vector.hpp"
 
 class CollisionManager;
 

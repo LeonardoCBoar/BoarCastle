@@ -9,7 +9,7 @@
 
 #include "collision_manager.hpp"
 #include "game_objects/wall.hpp"
-#include "../utils.hpp"
+#include "../utils/utils.hpp"
 #include "raylib.h"
 
 MapTile::MapTile(const boar::IndexVector2 index)

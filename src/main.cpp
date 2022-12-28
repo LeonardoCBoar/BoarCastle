@@ -1,11 +1,11 @@
 #include <ostream>
 #include <raylib.h>
 
-#include "camera.hpp"
+#include "input_modules/camera.hpp"
 #include "game_world/world.hpp"
-#include "vector.hpp"
-#include "interaction_modules/construction_manager.hpp"
-#include "interaction_modules/unit_manager.hpp"
+#include "utils/vector.hpp"
+#include "input_modules/construction_manager.hpp"
+#include "input_modules/unit_manager.hpp"
 #include <optional>
 
 const int SCREEN_WIDTH  = 1280;

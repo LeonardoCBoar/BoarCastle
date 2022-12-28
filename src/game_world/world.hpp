@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 
-#include "../vector.hpp"
+#include "../utils/vector.hpp"
 
 class Wall;
 class CollisionManager;

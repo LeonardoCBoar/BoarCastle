@@ -4,7 +4,7 @@
 
 #include <raylib.h>
 
-#include "vector.hpp"
+#include "../utils/vector.hpp"
 
 enum Direction
 {

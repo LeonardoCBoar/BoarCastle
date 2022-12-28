@@ -4,10 +4,10 @@
 
 #include "raylib.h"
 
-#include "../camera.hpp"
+#include "../input_modules/camera.hpp"
 #include "../game_world/world.hpp"
 #include "../game_world/collision_manager.hpp"
-#include "../utils.hpp"
+#include "../utils/utils.hpp"
 
 UnitMananger::UnitMananger(const HoverCamera* const camera)
     :camera{camera}

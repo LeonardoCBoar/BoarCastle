@@ -4,9 +4,9 @@ project(BoarCastle)
 
 add_executable( BoarCastle
     src/main.cpp
-    src/camera.cpp
-    src/interaction_modules/construction_manager.cpp
-    src/interaction_modules/unit_manager.cpp
+    src/input_modules/camera.cpp
+    src/input_modules/construction_manager.cpp
+    src/input_modules/unit_manager.cpp
     src/game_world/game_objects/wall.cpp
     src/game_world/world.cpp
 )

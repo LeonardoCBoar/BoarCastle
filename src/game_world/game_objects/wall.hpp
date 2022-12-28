@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../vector.hpp"
+#include "../../utils/vector.hpp"
 #include "raylib.h"
 #include <array>
 #include <utility>

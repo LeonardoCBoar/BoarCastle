@@ -1,5 +1,5 @@
 #include "camera.hpp"
-#include "vector.hpp"
+#include "../utils/vector.hpp"
 
 HoverCamera::HoverCamera(const boar::Vector3d position)
 {

@@ -1,6 +1,6 @@
 #include <memory>
 
-#include "../vector.hpp"
+#include "../utils/vector.hpp"
 
 class HoverCamera;
 class Wall;

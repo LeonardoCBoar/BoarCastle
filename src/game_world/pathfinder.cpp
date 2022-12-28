@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "collision_manager.hpp"
-#include "../utils.hpp"
+#include "../utils/utils.hpp"
 
 Pathfinder::Pathfinder(const std::shared_ptr<CollisionManager> collision_manager, const boar::IndexVector2 world_size)
     :collision_manager{collision_manager}, world_size{world_size}
