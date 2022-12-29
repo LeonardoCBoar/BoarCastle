@@ -41,7 +41,7 @@ int main(void)
             BeginMode3D(camera);
 
                 //DrawPlane({500,0,500}, {1000,1000}, Color{0,50,0,255});
-                DrawGrid(1200/5, 5.0f);
+                DrawGrid(1200/4, 4.0f);
 
                 game_world.render();
                 construction_manager.render();

@@ -25,7 +25,11 @@ void UnitMananger::update()
     {
         this->start_point = camera->current_mouse_index;
         if(this->start_point != this->target_point)
+        {
+            TimeMeasurer path_measurer{"Found path in "};
             this->path = game_world.get_path(this->start_point, this->target_point);
+            path_measurer.print_time();
+        }
 
     }
     else if(IsMouseButtonPressed(MOUSE_RIGHT_BUTTON) && is_inside_borders)

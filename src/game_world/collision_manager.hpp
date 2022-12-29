@@ -75,9 +75,6 @@ public:
     
     bool is_tile_empty(const uint32_t x, const uint32_t z) const
     {
-        if(!this->is_inside_borders(x,z))
-            return false;
-
         return collision_matrix.at(x).at(z) == false;
     }
     

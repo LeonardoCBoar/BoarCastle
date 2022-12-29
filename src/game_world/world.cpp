@@ -18,6 +18,22 @@ MapTile::MapTile(const boar::IndexVector2 index)
 
 }
 
+bool MapTile::update_set()
+{
+    bool updated = false;
+    for(std::shared_ptr<MapTile> neighbor : this->neighbors)
+    {
+        if(neighbor != nullptr && 
+           game_world.collision_manager->is_tile_empty(neighbor->index.x, neighbor->index.z) && 
+           neighbor->set_id < this->set_id)
+        {
+            this->set_id = neighbor->set_id;
+            updated = true;
+        }
+    }
+    return updated;
+}
+
 void MapTile::reset_pathfinding()
 {
     this->parent = nullptr;
@@ -41,6 +57,93 @@ void MapTile::setup_pathfinding(const boar::IndexVector2 target, const std::shar
     this->pathfinding_started = true;
 }
 
+
+void World::set_tile_neighbors(std::shared_ptr<MapTile> tile)
+{
+    int tile_count = 0;
+    for(int x = -1; x < 2; x++)
+    {
+        for(int z = -1; z < 2; z++)
+        {
+            std::shared_ptr<MapTile> neighbor_tile;
+            if(collision_manager->is_inside_borders(tile->index.x + x, tile->index.z + z))
+            {
+                const auto neighbor_index = boar::IndexVector2{tile->index.x + x, tile->index.z + z};
+                if(neighbor_index == tile->index)
+                    continue;
+
+                neighbor_tile = this->map[neighbor_index.x][neighbor_index.z];
+            }
+            else
+            {
+                neighbor_tile = nullptr;
+            }
+            
+            tile->neighbors[tile_count++] = neighbor_tile;
+
+        }
+    }
+}
+
+void World::update_tile_sets()
+{
+    TimeMeasurer timer{"Sets updated in"};
+    uint32_t set_id = 0;
+    for(auto& row : this->map)
+    {
+        for(std::shared_ptr<MapTile> tile : row)
+        {
+            tile->set_id = set_id++;
+        }
+    }
+
+    bool set_updated = true;
+    while(set_updated)
+    {
+        set_updated = false;
+        for(auto& row : this->map)
+        {
+            for(std::shared_ptr<MapTile> tile : row)
+            {
+                if(tile->update_set())
+                    set_updated = true;
+            }
+        }
+    }
+
+    timer.print_time();
+}
+
+
+void World::reset_pathfinding()
+{
+    for(auto& row : this->map)
+    {
+        for(std::shared_ptr<MapTile> tile : row)
+        {
+            tile->reset_pathfinding();
+        }
+    }
+}
+
+
+Path World::construct_path(const boar::IndexVector2 start_index, const std::shared_ptr<MapTile> target_tile)
+{
+    std::vector<boar::IndexVector2> path{};
+
+    std::shared_ptr<MapTile> current_tile = target_tile;
+    //std::cout << target_tile->index;
+    while(current_tile->index != start_index)
+    {
+        path.push_back(current_tile->index);
+        //std::cout << "looping at " << current_tile->index << std::endl;
+        current_tile = current_tile->parent;
+        //std::cout << "next will be at " << current_tile->index << std::endl;
+    }
+
+    return path;
+}
+
 World::World()
 {
     this->collision_manager = std::make_shared<CollisionManager>();
@@ -62,7 +165,10 @@ World::World()
         }
     }
 
-    //const auto path = this->get_path(boar::IndexVector2(1,1),boar::IndexVector2(500,3));
+    this->update_tile_sets();
+    TimeMeasurer a{"aaaaaa"};
+    const auto path = this->get_path(boar::IndexVector2(1,1),boar::IndexVector2(200,3));
+    a.print_time();
     //std::cout << path;
 }
 
@@ -73,9 +179,18 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
 
     //std::cout << origin << target;
 
-    std::shared_ptr<MapTile> origin_tile = this->map[origin.x][origin.z];
-    origin_tile->setup_pathfinding(target,nullptr,0);
+    std::shared_ptr<MapTile> origin_tile = this->get_tile(origin);
+    std::shared_ptr<MapTile> target_tile = this->get_tile(target);
+    std::cout << origin_tile->set_id << "->" << target_tile->set_id << "\n";
 
+    if(origin_tile->set_id != target_tile->set_id)
+    {
+        std::cout << "ret here";
+        return Path{};
+    }
+
+
+    origin_tile->setup_pathfinding(target,nullptr,0);
     open.push_back(origin_tile);
 
     while(!open.empty())
@@ -92,7 +207,6 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
             }
         }
 
-        //std::cout << current_tile->index << std::endl;
 
         open.erase(open.begin() + current_tile_index);
         current_tile->visited = true;
@@ -126,28 +240,16 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
     return Path{};
 }
 
-Path World::construct_path(const boar::IndexVector2 start_index, const std::shared_ptr<MapTile> target_tile)
+std::shared_ptr<MapTile> World::get_tile(const boar::IndexVector2 index)
 {
-    std::vector<boar::IndexVector2> path{};
-
-    std::shared_ptr<MapTile> current_tile = target_tile;
-    //std::cout << target_tile->index;
-    while(current_tile->index != start_index)
-    {
-        path.push_back(current_tile->index);
-        //std::cout << "looping at " << current_tile->index << std::endl;
-        current_tile = current_tile->parent;
-        //std::cout << "next will be at " << current_tile->index << std::endl;
-    }
-
-    return path;
+    return map[index.x][index.z];
 }
 
 void World::add_wall(std::shared_ptr<Wall> wall)
 {
     this->walls.push_back(wall);
-    this->map[wall->position.x][wall->position.z]->walkable = false;
     this->collision_manager->add_object_collision(wall);
+    this->update_tile_sets();
 }
 
 void World::update()
@@ -161,43 +263,5 @@ void World::render() const
     for(const auto wall : this->walls)
     {
         wall->render();
-    }
-}
-
-void World::set_tile_neighbors(std::shared_ptr<MapTile> tile)
-{
-    int tile_count = 0;
-    for(int x = -1; x < 2; x++)
-    {
-        for(int z = -1; z < 2; z++)
-        {
-            std::shared_ptr<MapTile> neighbor_tile;
-            if(collision_manager->is_inside_borders(tile->index.x + x, tile->index.z + z))
-            {
-                const auto neighbor_index = boar::IndexVector2{tile->index.x + x, tile->index.z + z};
-                if(neighbor_index == tile->index)
-                    continue;
-
-                neighbor_tile = this->map[neighbor_index.x][neighbor_index.z];
-            }
-            else
-            {
-                neighbor_tile = nullptr;
-            }
-            
-            tile->neighbors[tile_count++] = neighbor_tile;
-
-        }
-    }
-}
-
-void World::reset_pathfinding()
-{
-    for(auto& row : this->map)
-    {
-        for(auto& tile : row)
-        {
-            tile->reset_pathfinding();
-        }
     }
 }

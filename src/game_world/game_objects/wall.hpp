@@ -9,7 +9,7 @@
 class Wall
 {
 public:
-    constexpr static const boar::IndexVector3 SIZE{4,20,4};
+    constexpr static const boar::IndexVector3 SIZE{4,12,4};
 
     constexpr static const std::array<std::array<bool,SIZE.z>,SIZE.x> collision_matrix = 
     []{
