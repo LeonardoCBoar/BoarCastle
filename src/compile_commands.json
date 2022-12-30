@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/leonardo/Projects/BoarCastle/build",
-  "command": "/usr/bin/c++   -I/usr/local/include -o CMakeFiles/BoarCastle.dir/src/main.cpp.o -c /home/leonardo/Projects/BoarCastle/src/main.cpp",
-  "file": "/home/leonardo/Projects/BoarCastle/src/main.cpp"
-}
-]

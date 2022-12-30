@@ -1,0 +1,14 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+
+    "name": "boar-castle",
+    "dependencies": [
+
+        {
+            "name": "raylib",
+            "default-features": true
+        }
+    ],
+
+    "builtin-baseline": "dbd30811862212d24bf929db99361c7c12326783"
+}
