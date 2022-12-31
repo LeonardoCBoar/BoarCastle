@@ -17,8 +17,8 @@ class MapTile
 {
 public:
     //Pathfinding
-    std::array<std::shared_ptr<MapTile>,8> neighbors{};
-    std::shared_ptr<MapTile> parent;
+    std::array<MapTile*,8> neighbors{};
+    MapTile* parent;
     int32_t set_id = 0;
     int32_t movement_cost = 0;
     int32_t distance_cost = 0;
@@ -30,8 +30,10 @@ public:
 
     bool update_set();
     void reset_pathfinding();
-    void setup_pathfinding(const boar::IndexVector2 target, const std::shared_ptr<MapTile> parent, const int parent_dir_index);
+    void setup_pathfinding(const boar::IndexVector2 target, MapTile* parent, const int parent_dir_index);
     //
+
+    MapTile();
 
     boar::IndexVector2 index;
 
@@ -48,14 +50,14 @@ public:
     constexpr static const boar::IndexVector2 SIZE{600,600};
 
 private:
-    std::array<std::array<std::shared_ptr<MapTile>, SIZE.z>, SIZE.x> map{};
+    std::array<std::array<MapTile, SIZE.z>, SIZE.x> map{};
     std::vector<std::shared_ptr<Wall>> walls;
 
-    void set_tile_neighbors(std::shared_ptr<MapTile> tile);
-    Path construct_path(const boar::IndexVector2 start_index, const std::shared_ptr<MapTile> target_tile);
+    void set_tile_neighbors(MapTile* tile);
+    Path construct_path(const boar::IndexVector2 start_index, const MapTile* const target_tile);
     void update_tile_sets();
     void reset_pathfinding();
-    static auto get_minimum_cost_tile(std::list<std::shared_ptr<MapTile>>& tile_list);
+    static auto get_minimum_cost_tile(std::list<MapTile*>& tile_list);
 
 public:
     enum InputMode
@@ -85,7 +87,7 @@ public:
     World();
 
     Path get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target);
-    std::shared_ptr<MapTile> get_tile(const boar::IndexVector2);
+    MapTile* get_tile(const boar::IndexVector2);
     void add_wall(std::shared_ptr<Wall> wall);
     
     void update();

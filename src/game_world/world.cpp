@@ -12,6 +12,11 @@
 #include "../utils/utils.hpp"
 #include "raylib.h"
 
+MapTile::MapTile()
+{
+
+}
+
 MapTile::MapTile(const boar::IndexVector2 index)
     :index{index}
 {
@@ -21,7 +26,7 @@ MapTile::MapTile(const boar::IndexVector2 index)
 bool MapTile::update_set()
 {
     bool updated = false;
-    for(std::shared_ptr<MapTile> neighbor : this->neighbors)
+    for(const MapTile* const neighbor : this->neighbors)
     {
         if(neighbor != nullptr && 
            game_world.collision_manager->is_tile_empty(neighbor->index.x, neighbor->index.z) && 
@@ -44,7 +49,7 @@ void MapTile::reset_pathfinding()
     this->visited = false;
 }
 
-void MapTile::setup_pathfinding(const boar::IndexVector2 target, const std::shared_ptr<MapTile> parent, const int parent_dir_index)
+void MapTile::setup_pathfinding(const boar::IndexVector2 target, MapTile* parent, const int parent_dir_index)
 {
     this->parent = parent;
     if(this->parent != nullptr)
@@ -58,21 +63,21 @@ void MapTile::setup_pathfinding(const boar::IndexVector2 target, const std::shar
 }
 
 
-void World::set_tile_neighbors(std::shared_ptr<MapTile> tile)
+void World::set_tile_neighbors(MapTile* tile)
 {
     int tile_count = 0;
     for(int x = -1; x < 2; x++)
     {
         for(int z = -1; z < 2; z++)
         {
-            std::shared_ptr<MapTile> neighbor_tile;
+            MapTile* neighbor_tile;
             if(collision_manager->is_inside_borders(tile->index.x + x, tile->index.z + z))
             {
                 const auto neighbor_index = boar::IndexVector2{tile->index.x + x, tile->index.z + z};
                 if(neighbor_index == tile->index)
                     continue;
 
-                neighbor_tile = this->map[neighbor_index.x][neighbor_index.z];
+                neighbor_tile = &this->map[neighbor_index.x][neighbor_index.z];
             }
             else
             {
@@ -85,11 +90,11 @@ void World::set_tile_neighbors(std::shared_ptr<MapTile> tile)
     }
 }
 
-Path World::construct_path(const boar::IndexVector2 start_index, const std::shared_ptr<MapTile> target_tile)
+Path World::construct_path(const boar::IndexVector2 start_index, const MapTile* const target_tile)
 {
     std::vector<boar::IndexVector2> path{};
 
-    std::shared_ptr<MapTile> current_tile = target_tile;
+    const MapTile* current_tile = target_tile;
     while(current_tile->index != start_index)
     {
         path.push_back(current_tile->index);
@@ -105,9 +110,9 @@ void World::update_tile_sets()
     int32_t set_id = 0;
     for(auto& row : this->map)
     {
-        for(std::shared_ptr<MapTile> tile : row)
+        for(auto& tile : row)
         {
-            tile->set_id = set_id++;
+            tile.set_id = set_id++;
         }
     }
 
@@ -117,9 +122,9 @@ void World::update_tile_sets()
         set_updated = false;
         for(auto& row : this->map)
         {
-            for(std::shared_ptr<MapTile> tile : row)
+            for(auto& tile : row)
             {
-                if(tile->update_set())
+                if(tile.update_set())
                     set_updated = true;
             }
         }
@@ -132,22 +137,22 @@ void World::reset_pathfinding()
 {
     for(auto& row : this->map)
     {
-        for(std::shared_ptr<MapTile> tile : row)
+        for(auto& tile : row)
         {
-            tile->reset_pathfinding();
+            tile.reset_pathfinding();
         }
     }
 }
 
-auto World::get_minimum_cost_tile(std::list<std::shared_ptr<MapTile>>& open_list)
+auto World::get_minimum_cost_tile(std::list<MapTile*>& open_list)
 {
     auto current_tile_it = open_list.begin();
-    int32_t current_tile_cost = current_tile_it->get()->total_cost;
-    const auto list_end = open_list.end();
+    int32_t current_tile_cost = (*current_tile_it)->total_cost;
 
+    const auto list_end = open_list.end();
     for(auto tile = open_list.begin(); tile != list_end; tile++)
     {
-        if( current_tile_it->get()->total_cost < current_tile_cost)
+        if( (*current_tile_it)->total_cost < current_tile_cost)
         {
             current_tile_it = tile;
         }
@@ -158,6 +163,7 @@ auto World::get_minimum_cost_tile(std::list<std::shared_ptr<MapTile>>& open_list
 
 World::World()
 {
+    TimeMeasurer world_start{"world"};
     this->collision_manager = std::make_shared<CollisionManager>();
 
 
@@ -165,7 +171,7 @@ World::World()
     {
         for(int32_t z = 0; z < this->SIZE.z; z++)
         {
-            this->map[x][z] = std::make_shared<MapTile>(boar::IndexVector2{x,z});
+            this->map[x][z].index  = boar::IndexVector2{x,z};
         }
     }
 
@@ -173,9 +179,10 @@ World::World()
     {
         for(int32_t z = 0; z < this->SIZE.z; z++)
         {
-           this->set_tile_neighbors(this->map[x][z]);
+           this->set_tile_neighbors(&this->map[x][z]);
         }
     }
+    world_start.print_time();
 
     this->update_tile_sets();
     TimeMeasurer a{"aaaaaa"};
@@ -187,12 +194,12 @@ World::World()
 Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target)
 {
     this->reset_pathfinding();
-    std::list<std::shared_ptr<MapTile>> open{};
+    std::list<MapTile*> open{};
 
     //std::cout << origin << target;
 
-    std::shared_ptr<MapTile> origin_tile = this->get_tile(origin);
-    std::shared_ptr<MapTile> target_tile = this->get_tile(target);
+    MapTile* origin_tile = this->get_tile(origin);
+    MapTile* target_tile = this->get_tile(target);
     //std::cout << origin_tile->set_id << "->" << target_tile->set_id << "\n";
 
     if(origin_tile->set_id != target_tile->set_id)
@@ -243,9 +250,9 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
     return Path{};
 }
 
-std::shared_ptr<MapTile> World::get_tile(const boar::IndexVector2 index)
+MapTile* World::get_tile(const boar::IndexVector2 index)
 {
-    return map[index.x][index.z];
+    return &map[index.x][index.z];
 }
 
 void World::add_wall(std::shared_ptr<Wall> wall)
