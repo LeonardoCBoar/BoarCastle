@@ -1,6 +1,7 @@
 #include "world.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -84,10 +85,24 @@ void World::set_tile_neighbors(std::shared_ptr<MapTile> tile)
     }
 }
 
+Path World::construct_path(const boar::IndexVector2 start_index, const std::shared_ptr<MapTile> target_tile)
+{
+    std::vector<boar::IndexVector2> path{};
+
+    std::shared_ptr<MapTile> current_tile = target_tile;
+    while(current_tile->index != start_index)
+    {
+        path.push_back(current_tile->index);
+        current_tile = current_tile->parent;
+    }
+
+    return path;
+}
+
 void World::update_tile_sets()
 {
     TimeMeasurer timer{"Sets updated in"};
-    uint32_t set_id = 0;
+    int32_t set_id = 0;
     for(auto& row : this->map)
     {
         for(std::shared_ptr<MapTile> tile : row)
@@ -113,7 +128,6 @@ void World::update_tile_sets()
     timer.print_time();
 }
 
-
 void World::reset_pathfinding()
 {
     for(auto& row : this->map)
@@ -125,22 +139,21 @@ void World::reset_pathfinding()
     }
 }
 
-
-Path World::construct_path(const boar::IndexVector2 start_index, const std::shared_ptr<MapTile> target_tile)
+auto World::get_minimum_cost_tile(std::list<std::shared_ptr<MapTile>>& open_list)
 {
-    std::vector<boar::IndexVector2> path{};
+    auto current_tile_it = open_list.begin();
+    int32_t current_tile_cost = current_tile_it->get()->total_cost;
+    const auto list_end = open_list.end();
 
-    std::shared_ptr<MapTile> current_tile = target_tile;
-    //std::cout << target_tile->index;
-    while(current_tile->index != start_index)
+    for(auto tile = open_list.begin(); tile != list_end; tile++)
     {
-        path.push_back(current_tile->index);
-        //std::cout << "looping at " << current_tile->index << std::endl;
-        current_tile = current_tile->parent;
-        //std::cout << "next will be at " << current_tile->index << std::endl;
+        if( current_tile_it->get()->total_cost < current_tile_cost)
+        {
+            current_tile_it = tile;
+        }
     }
 
-    return path;
+    return current_tile_it;
 }
 
 World::World()
@@ -148,17 +161,17 @@ World::World()
     this->collision_manager = std::make_shared<CollisionManager>();
 
 
-    for(uint32_t x = 0; x < this->SIZE.x; x++)
+    for(int32_t x = 0; x < this->SIZE.x; x++)
     {
-        for(uint32_t z = 0; z < this->SIZE.z; z++)
+        for(int32_t z = 0; z < this->SIZE.z; z++)
         {
             this->map[x][z] = std::make_shared<MapTile>(boar::IndexVector2{x,z});
         }
     }
 
-    for(uint32_t x = 0; x < this->SIZE.x; x++)
+    for(int32_t x = 0; x < this->SIZE.x; x++)
     {
-        for(uint32_t z = 0; z < this->SIZE.z; z++)
+        for(int32_t z = 0; z < this->SIZE.z; z++)
         {
            this->set_tile_neighbors(this->map[x][z]);
         }
@@ -194,17 +207,10 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
 
     while(!open.empty())
     {
-        auto current_tile_it = open.begin();
-
-        for(std::list<std::shared_ptr<MapTile>>::iterator tile = open.begin(); tile != open.end(); tile++)
-        {
-            if( tile->get()->total_cost < current_tile_it->get()->total_cost)
-            {
-                current_tile_it = tile;
-            }
-        }
-
+        
+        auto current_tile_it = World::get_minimum_cost_tile(open);
         auto current_tile = *current_tile_it;
+
         open.erase(current_tile_it);
         current_tile->visited = true;
 
@@ -225,7 +231,7 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
             }
             else
             {
-                const double other_cost = current_tile->movement_cost + World::MOVEMENT_COST[i] + neighbor->index.manhattan_distance(target);
+                const int32_t other_cost = current_tile->movement_cost + World::MOVEMENT_COST[i] + neighbor->index.manhattan_distance(target);
                 if(other_cost < neighbor->total_cost)
                 {
                     neighbor->setup_pathfinding(target, current_tile, 7-i);

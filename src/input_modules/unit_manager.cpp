@@ -46,10 +46,10 @@ void UnitMananger::update()
         auto total_time = 0;
         std::cout << "PF test\n";
         boar::IndexVector2 origin{0,0};
-        for(uint32_t x = 0; x < 300; x+=30)
+        for(int32_t x = 0; x < 300; x+=30)
         {
 
-            for(uint32_t z = 0; z < 300; z+=30)
+            for(int32_t z = 0; z < 300; z+=30)
             {
                 boar::IndexVector2 target{x,z};
                 std::cout << target;

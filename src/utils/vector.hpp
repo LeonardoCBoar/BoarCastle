@@ -34,10 +34,10 @@ public:
         return this->x != other.x || this->z != other.z;
     }
 
-    inline double manhattan_distance(const CustomVector2<NumberT> other)const
+    inline int32_t manhattan_distance(const CustomVector2<NumberT> other)const
     {
-        return abs(static_cast<double>(this->x) - static_cast<double>(other.x)) + 
-               abs(static_cast<double>(this->z) - static_cast<double>(other.z)); 
+        return abs(static_cast<int16_t>(this->x) - static_cast<int16_t>(other.x)) + 
+               abs(static_cast<int16_t>(this->z) - static_cast<int16_t>(other.z)); 
 
     }
 };
@@ -48,7 +48,7 @@ inline std::ostream& operator <<(std::ostream& ostream, const boar::CustomVector
     return ostream << '(' << vector.x << ',' << vector.z << ")\n";
 }
 
-using IndexVector2 = CustomVector2<uint32_t>;
+using IndexVector2 = CustomVector2<int32_t>;
 
 template<class NumberT>
 class CustomVector3 
@@ -136,22 +136,22 @@ public:
         return sqrt( (this->x*this->x) + (this->y*this->y) + (this->z*this->z) );
     }
 
-    inline CustomVector3<uint32_t> to_index(const uint32_t step_size = 1) const
+    inline CustomVector3<int32_t> to_index(const int32_t step_size = 1) const
     {
-        return CustomVector3<uint32_t>
+        return CustomVector3<int32_t>
         {
-            static_cast<uint32_t>(this->x) / step_size,
+            static_cast<int32_t>(this->x) / step_size,
             0,
-            static_cast<uint32_t>(this->z) / step_size,
+            static_cast<int32_t>(this->z) / step_size,
         };
     }
     
-    inline CustomVector2<uint32_t> to_index2(const uint32_t step_size = 1) const
+    inline CustomVector2<int32_t> to_index2(const int32_t step_size = 1) const
     {
-        return CustomVector2<uint32_t>
+        return CustomVector2<int32_t>
         {
-            static_cast<uint32_t>(this->x) / step_size,
-            static_cast<uint32_t>(this->z) / step_size,
+            static_cast<int32_t>(this->x) / step_size,
+            static_cast<int32_t>(this->z) / step_size,
         };
     }
     
@@ -186,14 +186,14 @@ public:
         };
     }
 
-    inline CustomVector2<uint32_t>index_vector() const
+    inline CustomVector2<int32_t>index_vector() const
     {
         return IndexVector2{this->x, this->z};
     }
 };
 
 using Vector3u16 = boar::CustomVector3<uint16_t>;
-using Vector3u32 = boar::CustomVector3<uint32_t>;
+using Vector3u32 = boar::CustomVector3<int32_t>;
 using Vector3i16 = boar::CustomVector3<int16_t>;
 using Vector3i32 = boar::CustomVector3<int32_t>;
 using Vector3d   = boar::CustomVector3<double>;

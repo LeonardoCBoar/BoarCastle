@@ -23,7 +23,6 @@ int main(void)
     UnitMananger unit_manager{&camera};
 
     SetCameraMode(camera, CAMERA_FREE);
-    //SetTargetFPS(60);
 
 
 

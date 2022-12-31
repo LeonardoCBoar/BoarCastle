@@ -52,12 +52,12 @@ public:
     {
         return this->is_inside_borders
         (
-            static_cast<uint32_t>(point.x),
-            static_cast<uint32_t>(point.z)
+            static_cast<int32_t>(point.x),
+            static_cast<int32_t>(point.z)
         );
     }
     
-    bool is_inside_borders(const uint32_t x, const uint32_t z) const
+    bool is_inside_borders(const int32_t x, const int32_t z) const
     {
         return x >= 0 && x < this->collision_matrix.size() && 
                z >= 0 && z < this->collision_matrix.at(0).size();
@@ -68,12 +68,12 @@ public:
     {
         return this->is_tile_empty
         (
-            static_cast<uint32_t>(point.x),
-            static_cast<uint32_t>(point.z)
+            static_cast<int32_t>(point.x),
+            static_cast<int32_t>(point.z)
         );
     }
     
-    bool is_tile_empty(const uint32_t x, const uint32_t z) const
+    bool is_tile_empty(const int32_t x, const int32_t z) const
     {
         return collision_matrix.at(x).at(z) == false;
     }
