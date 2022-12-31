@@ -1,6 +1,6 @@
-mkdir build
+#!/usr/bin/bash
 
-cmake -B build -S . -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build build -j`nproc`
 
-cmake --build build
-mv build/BoarCastle .
+cp build/BoarCastle .
