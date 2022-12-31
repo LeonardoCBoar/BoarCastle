@@ -7,14 +7,16 @@
 #include "input_modules/construction_manager.hpp"
 #include "input_modules/unit_manager.hpp"
 #include <optional>
+#include <gperftools/profiler.h>
 
 const int SCREEN_WIDTH  = 1280;
 const int SCREEN_HEIGHT = 720;
 
 int main(void)
 {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BoarCastle");
+    ProfilerStart("boar.prof");
 
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BoarCastle");
     HoverCamera camera{ {10, 100, 10} };
 
     ConstructionManager construction_manager{&camera};
@@ -56,5 +58,6 @@ int main(void)
 
     CloseWindow();
 
+    ProfilerStop();
     return 0;
 }
