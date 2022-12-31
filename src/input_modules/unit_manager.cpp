@@ -1,5 +1,6 @@
 #include "unit_manager.hpp"
 
+#include <cstdint>
 #include <iostream>
 
 #include "raylib.h"
@@ -39,6 +40,29 @@ void UnitMananger::update()
         if(this->start_point != this->target_point)
             this->path = game_world.get_path(this->start_point, this->target_point);
     }
+
+    if(IsKeyDown('T'))
+    {
+        auto total_time = 0;
+        std::cout << "PF test\n";
+        boar::IndexVector2 origin{0,0};
+        for(uint32_t x = 0; x < 300; x+=30)
+        {
+
+            for(uint32_t z = 0; z < 300; z+=30)
+            {
+                boar::IndexVector2 target{x,z};
+                std::cout << target;
+                TimeMeasurer pathtimer{"Path found in"};
+                this->path = game_world.get_path(origin, target);
+                total_time += pathtimer.get_time();
+                pathtimer.print_time();
+
+            }
+        }
+        std::cout << "Found all 100 paths in " << total_time/1000 << "." << total_time%1000 << "s\n";
+    }
+    
 }
 
 void UnitMananger::render() const

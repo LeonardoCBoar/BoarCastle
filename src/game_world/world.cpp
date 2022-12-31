@@ -1,11 +1,10 @@
 #include "world.hpp"
 
 #include <algorithm>
-#include <cstddef>
 #include <iostream>
 #include <memory>
-#include <type_traits>
 #include <vector>
+#include <list>
 
 #include "collision_manager.hpp"
 #include "game_objects/wall.hpp"
@@ -175,13 +174,13 @@ World::World()
 Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target)
 {
     this->reset_pathfinding();
-    std::vector<std::shared_ptr<MapTile>> open{};
+    std::list<std::shared_ptr<MapTile>> open{};
 
     //std::cout << origin << target;
 
     std::shared_ptr<MapTile> origin_tile = this->get_tile(origin);
     std::shared_ptr<MapTile> target_tile = this->get_tile(target);
-    std::cout << origin_tile->set_id << "->" << target_tile->set_id << "\n";
+    //std::cout << origin_tile->set_id << "->" << target_tile->set_id << "\n";
 
     if(origin_tile->set_id != target_tile->set_id)
     {
@@ -195,20 +194,18 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
 
     while(!open.empty())
     {
-        std::shared_ptr<MapTile> current_tile = open[0];
-        size_t current_tile_index = 0;
+        auto current_tile_it = open.begin();
 
-        for(size_t i = 1; i < open.size(); i++)
+        for(std::list<std::shared_ptr<MapTile>>::iterator tile = open.begin(); tile != open.end(); tile++)
         {
-            if(open[i]->total_cost < open[current_tile_index]->total_cost)
+            if( tile->get()->total_cost < current_tile_it->get()->total_cost)
             {
-                current_tile = open[i];
-                current_tile_index = i;
+                current_tile_it = tile;
             }
         }
 
-
-        open.erase(open.begin() + current_tile_index);
+        auto current_tile = *current_tile_it;
+        open.erase(current_tile_it);
         current_tile->visited = true;
 
         if(current_tile->index == target)
