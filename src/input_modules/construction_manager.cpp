@@ -11,7 +11,6 @@
 #include "../input_modules/camera.hpp"
 #include "../game_world/game_objects/wall.hpp"
 #include "../game_world/world.hpp"
-#include "../game_world/collision_manager.hpp"
 
 
 ConstructionManager::ConstructionManager(const HoverCamera* const camera)
@@ -38,7 +37,7 @@ void ConstructionManager::handle_input()
 
     const auto selected_tile = camera->current_mouse_index;
 
-    if(!game_world.collision_manager->is_inside_borders(selected_tile))
+    if(!game_world.is_inside_borders(selected_tile))
     {
         this->preview_wall->visible = false;
         return;
@@ -49,7 +48,7 @@ void ConstructionManager::handle_input()
 
 
     const boar::Vector3u32 half_wall_size = preview_wall->SIZE/2;
-    bool free_space = game_world.collision_manager->can_fit_object(preview_wall);
+    bool free_space = game_world.can_fit_object(preview_wall);
 
 
     if(free_space)

@@ -11,7 +11,6 @@
 #include "../utils/vector.hpp"
 
 class Wall;
-class CollisionManager;
 
 class MapTile
 {
@@ -35,6 +34,7 @@ public:
 
     MapTile();
 
+    bool empty = true;
     boar::IndexVector2 index;
 
     MapTile(const boar::IndexVector2 index);
@@ -79,11 +79,6 @@ public:
 
     InputMode current_input_mode;
 
-
-
-    std::shared_ptr<CollisionManager> collision_manager;
-
-
     World();
 
     Path get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target);
@@ -92,8 +87,72 @@ public:
     
     void update();
     void render() const;
+    
+    template<class GameObject>
+    bool can_fit_object(const std::shared_ptr<GameObject> game_object) const
+    {
+        const size_t half_size_x = game_object->collision_matrix.size()/2;
+        const size_t half_size_z = game_object->collision_matrix.at(0).size()/2;
 
+        const boar::IndexVector3 index = game_object->position.to_index(1);
+        for(size_t x = index.x - half_size_x; x < index.x + half_size_x; x++)
+        {
+            for(size_t z = index.z - half_size_z; z < index.z + half_size_z; z++)
+            {
+                if(!this->is_tile_empty(x,z))        
+                    return false;
+            } 
+        } 
 
+        return true;
+    } 
+
+    template<class GameObject>
+    void add_object_collision(const std::shared_ptr<GameObject> game_object)
+    {
+        const size_t half_size_x = game_object->collision_matrix.size()/2;
+        const size_t half_size_z = game_object->collision_matrix.at(0).size()/2;
+
+        const boar::IndexVector3 index = game_object->position.to_index();
+        for(size_t x = index.x - half_size_x; x < index.x + half_size_x; x++)
+        {
+            for(size_t z = index.z - half_size_z; z < index.z + half_size_z; z++)
+            {
+                this->map[x][z].empty = false;
+            } 
+        } 
+    }
+
+    template<class VectorT>
+    bool is_inside_borders(const VectorT point) const
+    {
+        return this->is_inside_borders
+        (
+            static_cast<int32_t>(point.x),
+            static_cast<int32_t>(point.z)
+        );
+    }
+    
+    bool is_inside_borders(const int32_t x, const int32_t z) const
+    {
+        return x >= 0 && x < this->SIZE.x && 
+               z >= 0 && z < this->SIZE.z;
+    }
+
+    template<class VectorT>
+    bool is_tile_empty(const VectorT point) const
+    {
+        return this->is_tile_empty
+        (
+            static_cast<int32_t>(point.x),
+            static_cast<int32_t>(point.z)
+        );
+    }
+    
+    bool is_tile_empty(const int32_t x, const int32_t z) const
+    {
+        return map[x][z].empty;
+    }
 
 };
 

@@ -7,7 +7,6 @@
 #include <vector>
 #include <list>
 
-#include "collision_manager.hpp"
 #include "game_objects/wall.hpp"
 #include "../utils/utils.hpp"
 #include "raylib.h"
@@ -28,9 +27,7 @@ bool MapTile::update_set()
     bool updated = false;
     for(const MapTile* const neighbor : this->neighbors)
     {
-        if(neighbor != nullptr && 
-           game_world.collision_manager->is_tile_empty(neighbor->index.x, neighbor->index.z) && 
-           neighbor->set_id < this->set_id)
+        if(neighbor != nullptr && neighbor->empty && neighbor->set_id < this->set_id)
         {
             this->set_id = neighbor->set_id;
             updated = true;
@@ -71,7 +68,7 @@ void World::set_tile_neighbors(MapTile* tile)
         for(int z = -1; z < 2; z++)
         {
             MapTile* neighbor_tile;
-            if(collision_manager->is_inside_borders(tile->index.x + x, tile->index.z + z))
+            if(is_inside_borders(tile->index.x + x, tile->index.z + z))
             {
                 const auto neighbor_index = boar::IndexVector2{tile->index.x + x, tile->index.z + z};
                 if(neighbor_index == tile->index)
@@ -164,7 +161,6 @@ auto World::get_minimum_cost_tile(std::list<MapTile*>& open_list)
 World::World()
 {
     TimeMeasurer world_start{"world"};
-    this->collision_manager = std::make_shared<CollisionManager>();
 
 
     for(int32_t x = 0; x < this->SIZE.x; x++)
@@ -230,7 +226,7 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
         {
             const auto neighbor = current_tile->neighbors[i];
 
-            if(neighbor == nullptr || !collision_manager->is_tile_empty(neighbor->index)) continue;
+            if(neighbor == nullptr || !is_tile_empty(neighbor->index)) continue;
             else if(!neighbor->pathfinding_started)
             {
                 neighbor->setup_pathfinding(target, current_tile, 7-i);
@@ -258,7 +254,7 @@ MapTile* World::get_tile(const boar::IndexVector2 index)
 void World::add_wall(std::shared_ptr<Wall> wall)
 {
     this->walls.push_back(wall);
-    this->collision_manager->add_object_collision(wall);
+    this->add_object_collision(wall);
     this->update_tile_sets();
 }
 

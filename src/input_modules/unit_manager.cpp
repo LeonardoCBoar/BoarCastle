@@ -7,7 +7,6 @@
 
 #include "../input_modules/camera.hpp"
 #include "../game_world/world.hpp"
-#include "../game_world/collision_manager.hpp"
 #include "../utils/utils.hpp"
 
 UnitMananger::UnitMananger(const HoverCamera* const camera)
@@ -20,7 +19,7 @@ void UnitMananger::update()
 {
     if(game_world.current_input_mode != World::InputMode::COMMAND) return;
 
-    const bool is_inside_borders = game_world.collision_manager->is_inside_borders(camera->current_mouse_index);
+    const bool is_inside_borders = game_world.is_inside_borders(camera->current_mouse_index);
 
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON) && is_inside_borders)
     {
