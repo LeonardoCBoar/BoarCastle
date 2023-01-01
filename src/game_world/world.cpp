@@ -226,7 +226,7 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
         {
             const auto neighbor = current_tile->neighbors[i];
 
-            if(neighbor == nullptr || !is_tile_empty(neighbor->index)) continue;
+            if(neighbor == nullptr || !neighbor->empty) continue;
             else if(!neighbor->pathfinding_started)
             {
                 neighbor->setup_pathfinding(target, current_tile, 7-i);
