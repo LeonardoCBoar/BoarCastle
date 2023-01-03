@@ -128,6 +128,7 @@ void World::update_tile_sets()
     }
 
     timer.print_time();
+    this->queued_set_update = false;
 }
 
 void World::reset_pathfinding()
@@ -189,6 +190,7 @@ World::World()
 
 Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target)
 {
+    this->check_update_set();
     this->reset_pathfinding();
     std::list<MapTile*> open{};
 
@@ -199,10 +201,7 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
     //std::cout << origin_tile->set_id << "->" << target_tile->set_id << "\n";
 
     if(origin_tile->set_id != target_tile->set_id)
-    {
-        std::cout << "ret here";
         return Path{};
-    }
 
 
     origin_tile->setup_pathfinding(target,nullptr,0);
@@ -255,13 +254,22 @@ void World::add_wall(std::shared_ptr<Wall> wall)
 {
     this->walls.push_back(wall);
     this->add_object_collision(wall);
-    this->update_tile_sets();
+}
+
+void World::check_update_set()
+{
+    if(this->queued_set_update)
+        this->update_tile_sets();
 }
 
 void World::update()
 {
     if(IsKeyDown(KEY_ONE)) this->current_input_mode = InputMode::CONSTRUCTION;
-    else if(IsKeyDown(KEY_TWO)) this->current_input_mode = InputMode::COMMAND;
+    else if(IsKeyDown(KEY_TWO))
+    {
+        this->check_update_set();
+        this->current_input_mode = InputMode::COMMAND;
+    }
 }
 
 void World::render() const

@@ -47,7 +47,22 @@ typedef std::vector<boar::IndexVector2> Path ;
 class World
 {
 public:
+    enum InputMode
+    {
+        CONSTRUCTION,
+        COMMAND
+    };
+
     constexpr static const boar::IndexVector2 SIZE{600,600};
+    constexpr static size_t DIR_COUNT = 8;
+    constexpr static int32_t LINEAR_DIST = 10;
+    constexpr static int32_t DIAGONAL_DIST = 14;
+    constexpr static std::array<int32_t,DIR_COUNT> MOVEMENT_COST
+    {
+        DIAGONAL_DIST, LINEAR_DIST, DIAGONAL_DIST,
+        LINEAR_DIST,                LINEAR_DIST,
+        DIAGONAL_DIST, LINEAR_DIST, DIAGONAL_DIST
+    };
 
 private:
     std::array<std::array<MapTile, SIZE.z>, SIZE.x> map{};
@@ -60,30 +75,16 @@ private:
     static auto get_minimum_cost_tile(std::list<MapTile*>& tile_list);
 
 public:
-    enum InputMode
-    {
-        CONSTRUCTION,
-        COMMAND
-    };
-
-    constexpr static size_t DIR_COUNT = 8;
-    constexpr static int32_t LINEAR_DIST = 10;
-    constexpr static int32_t DIAGONAL_DIST = 14;
-    constexpr static std::array<int32_t,DIR_COUNT> MOVEMENT_COST
-    {
-        DIAGONAL_DIST, LINEAR_DIST, DIAGONAL_DIST,
-        LINEAR_DIST,                LINEAR_DIST,
-        DIAGONAL_DIST, LINEAR_DIST, DIAGONAL_DIST
-    };
-    
 
     InputMode current_input_mode;
+    bool queued_set_update = false;
 
     World();
 
     Path get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target);
     MapTile* get_tile(const boar::IndexVector2);
     void add_wall(std::shared_ptr<Wall> wall);
+    void check_update_set();
     
     void update();
     void render() const;
@@ -121,6 +122,7 @@ public:
                 this->map[x][z].empty = false;
             } 
         } 
+        this->queued_set_update = true;
     }
 
     template<class VectorT>
