@@ -9,6 +9,7 @@ add_executable(BoarCastle
     src/input_modules/construction_manager.cpp
     src/input_modules/unit_manager.cpp
     src/game_world/game_objects/wall.cpp
+    src/game_world/game_objects/worker.cpp
     src/game_world/world.cpp
 )
 

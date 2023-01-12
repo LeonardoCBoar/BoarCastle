@@ -12,7 +12,7 @@
 UnitMananger::UnitMananger(const HoverCamera* const camera)
     :camera{camera}
 {
-
+    this->workers.emplace_back();
 }
 
 void UnitMananger::update()
@@ -23,6 +23,7 @@ void UnitMananger::update()
 
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON) && is_inside_borders)
     {
+        this->workers[0].move_to(camera->current_mouse_index);
         this->start_point = camera->current_mouse_index;
         if(this->start_point != this->target_point)
         {
@@ -84,4 +85,10 @@ void UnitMananger::render() const
     target_pos.y = 0;
     target_pos.z = target_point.z + 0.5;
     DrawCube(target_pos, 1, 0.1, 1, RED);
+
+    for(const Worker& worker : this->workers)
+    {
+        worker.render();
+    }
+
 }

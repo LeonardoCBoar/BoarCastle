@@ -3,6 +3,8 @@
 #include "../utils/vector.hpp"
 #include <vector>
 
+#include "../game_world/game_objects/worker.hpp"
+
 class HoverCamera;
 
 class UnitMananger
@@ -14,6 +16,8 @@ public:
     boar::IndexVector2 target_point{};
 
     std::vector<boar::IndexVector2> path{};
+
+    std::vector<Worker> workers;
 
     void update();
     void render() const;
