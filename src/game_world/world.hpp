@@ -65,7 +65,7 @@ public:
     };
 
 private:
-    std::array<std::array<MapTile, SIZE.z>, SIZE.x> map{};
+    std::array<std::array<MapTile, SIZE.z>, SIZE.x> map;
     std::vector<std::shared_ptr<Wall>> walls;
 
     void set_tile_neighbors(MapTile* tile);
