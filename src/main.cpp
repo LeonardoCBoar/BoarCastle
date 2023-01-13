@@ -23,18 +23,15 @@ int main(void)
     UnitMananger unit_manager{&camera};
 
     SetCameraMode(camera, CAMERA_FREE);
-
-
-
-
+    
     while (!WindowShouldClose())
     {
-        const double delta_t = GetFrameTime();
+        const float delta_t = GetFrameTime();
         camera.update(delta_t);
         game_world.update();
 
         construction_manager.update();
-        unit_manager.update();
+        unit_manager.update(delta_t);
 
         BeginDrawing();
             ClearBackground(RAYWHITE);

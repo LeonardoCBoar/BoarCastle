@@ -15,7 +15,7 @@ UnitMananger::UnitMananger(const HoverCamera* const camera)
     this->workers.emplace_back();
 }
 
-void UnitMananger::update()
+void UnitMananger::update(const float delta)
 {
     if(game_world.current_input_mode != World::InputMode::COMMAND) return;
 
@@ -61,6 +61,11 @@ void UnitMananger::update()
             }
         }
         std::cout << "Found all 100 paths in " << total_time/1000 << "." << total_time%1000 << "s\n";
+    }
+
+    for(Worker& worker : this->workers)
+    {
+        worker.update(delta);
     }
     
 }

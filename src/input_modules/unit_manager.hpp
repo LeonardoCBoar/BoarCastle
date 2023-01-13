@@ -19,7 +19,7 @@ public:
 
     std::vector<Worker> workers;
 
-    void update();
+    void update(const float delta);
     void render() const;
 
 private:
