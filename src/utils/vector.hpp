@@ -24,6 +24,42 @@ public:
 
     }
 
+    inline CustomVector2<NumberT> operator+(const CustomVector2<NumberT> other) const
+    {
+        return CustomVector2<NumberT>
+        {
+            this->x + other.x,
+            this->z + other.z
+        };
+    }
+
+    inline CustomVector2<NumberT> operator-(const CustomVector2<NumberT> other) const
+    {
+        return CustomVector2<NumberT>
+        {
+            this->x - other.x,
+            this->z - other.z
+        };
+    }
+
+    inline CustomVector2<NumberT> operator*(const CustomVector2<NumberT> other) const
+    {
+        return CustomVector2<NumberT>
+        {
+            this->x * other.x,
+            this->z * other.z
+        };
+    }
+
+    inline CustomVector2<NumberT> operator/(const CustomVector2<NumberT> other) const
+    {
+        return CustomVector2<NumberT>
+        {
+            this->x / other.x,
+            this->z / other.z
+        };
+    }
+
     inline bool operator==(const CustomVector2<NumberT> other) const
     {
         return this->x == other.x && this->z == other.z;

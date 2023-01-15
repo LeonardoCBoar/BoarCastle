@@ -14,10 +14,9 @@ const int SCREEN_HEIGHT = 720;
 
 int main(void)
 {
-    ProfilerStart("boar.prof");
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BoarCastle");
-    HoverCamera camera{ {10, 100, 10} };
+    HoverCamera camera{ {10, 50, 10} };
 
     ConstructionManager construction_manager{&camera};
     UnitMananger unit_manager{&camera};
@@ -39,7 +38,7 @@ int main(void)
             BeginMode3D(camera);
 
                 //DrawPlane({500,0,500}, {1000,1000}, Color{0,50,0,255});
-                DrawGrid(1200/4, 4.0f);
+                DrawGrid(1200/2, 2.0f);
 
                 game_world.render();
                 construction_manager.render();
@@ -54,6 +53,5 @@ int main(void)
 
     CloseWindow();
 
-    ProfilerStop();
     return 0;
 }

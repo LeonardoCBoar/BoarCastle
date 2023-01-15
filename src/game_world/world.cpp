@@ -245,6 +245,18 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
     return Path{};
 }
 
+int32_t World::get_movement_cost(const boar::IndexVector2 direction) const
+{
+    const std::array<int32_t, 3> movement_costs
+    {
+        1,
+        LINEAR_DIST,
+        DIAGONAL_DIST
+    };
+
+    return movement_costs[abs(direction.x) + abs(direction.z)];
+}
+
 MapTile* World::get_tile(const boar::IndexVector2 index)
 {
     return &map[index.x][index.z];

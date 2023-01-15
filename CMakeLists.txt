@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.22.1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set (CMAKE_CXX_FLAGS "-lprofiler")
+#set (CMAKE_CXX_FLAGS "-lprofiler")
+set (CMAKE_CXX_FLAGS "-O2")
 
 project(BoarCastle CXX)
 add_executable(BoarCastle
@@ -16,4 +17,4 @@ add_executable(BoarCastle
 find_package(raylib CONFIG REQUIRED)
 
 target_link_libraries(BoarCastle PRIVATE raylib -fsanitize=address -fsanitize=undefined)
-target_compile_options(BoarCastle PRIVATE -std=c++17 -g)
+target_compile_options(BoarCastle PRIVATE -std=c++17)

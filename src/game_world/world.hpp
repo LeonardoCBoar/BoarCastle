@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include <sys/types.h>
 #include <vector>
@@ -80,6 +79,8 @@ public:
     bool queued_set_update = false;
 
     World();
+
+    int32_t get_movement_cost(const boar::IndexVector2) const;
 
     Path get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target);
     MapTile* get_tile(const boar::IndexVector2);
