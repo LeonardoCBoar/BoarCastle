@@ -7,6 +7,11 @@
 #include "../world.hpp"
 #include "../../utils/utils.hpp"
 
+Worker::Worker(const boar::IndexVector2 pos)
+    :index{pos}, step_target{pos}, target{pos}, render_pos{(float)pos.x, 0.5f, (float)pos.z}
+{
+    game_world.get_tile(this->index)->empty = false;
+}
 
 void Worker::move_to(const boar::IndexVector2 target)
 {
@@ -48,6 +53,8 @@ void Worker::update(const float delta)
         this->step_progress += delta * Worker::SPEED / movement_cost ;
         if(this->step_progress > 1)
         {
+            game_world.get_tile(this->index)->empty = true;
+            game_world.get_tile(this->step_target)->empty = false;
             this->step_progress -= 1;
             this->index = this->step_target;
             if(this->index == this->target)

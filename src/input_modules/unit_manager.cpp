@@ -12,7 +12,7 @@
 UnitMananger::UnitMananger(const HoverCamera* const camera)
     :camera{camera}
 {
-    this->workers.emplace_back();
+    this->workers.emplace_back(boar::IndexVector2{20,20});
 }
 
 void UnitMananger::update(const float delta)
