@@ -34,6 +34,9 @@ public:
 
     void update(const float delta);
     void render() const;
+
+private:
+    void update_movement(const float delta);
     
 
 };
