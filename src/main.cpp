@@ -21,7 +21,7 @@ int main(void)
     ConstructionManager construction_manager{&camera};
     UnitMananger unit_manager{&camera};
 
-    SetCameraMode(camera, CAMERA_FREE);
+    UpdateCamera(&camera, CAMERA_FREE);
     
     while (!WindowShouldClose())
     {
