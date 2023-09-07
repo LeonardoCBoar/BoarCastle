@@ -7,7 +7,6 @@
 #include "input_modules/construction_manager.hpp"
 #include "input_modules/unit_manager.hpp"
 #include <optional>
-#include <gperftools/profiler.h>
 
 const int SCREEN_WIDTH  = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -21,6 +20,7 @@ int main(void)
     ConstructionManager construction_manager{&camera};
     UnitMananger unit_manager{&camera};
 
+    SetTargetFPS(60);
     UpdateCamera(&camera, CAMERA_FREE);
     
     while (!WindowShouldClose())
