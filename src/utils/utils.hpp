@@ -1,32 +1,50 @@
+
+// builtin
 #include <chrono>
-#include <string>
 #include <iostream>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
-class TimeMeasurer
-{
+
+
+class TimeMeasurer {
 
 public:
-    enum TimeUnit
-    {
+
+    enum TimeUnit {
         MICROSECOND,
         MILLISECOND,
         SECOND
     };
 
-    TimeMeasurer(std::string&& message = "", const TimeUnit time_unit = TimeUnit::MILLISECOND)
-        :message{message}, time_unit{time_unit}, start_time{std::chrono::high_resolution_clock::now()}
-    {
-    
-    }
+private:
 
-    auto get_time() const
-    {   
-        const auto current_time = std::chrono::high_resolution_clock::now();
-        const auto elapsed_time = current_time - this->start_time;
-        switch (this->time_unit) 
-        {
+    // TODO: tornar static
+    std::unordered_map<TimeUnit, std::string> const unit_strings {
+        {MICROSECOND, "us"},
+        {MILLISECOND, "ms"},
+        {SECOND, "s"},
+    };
+
+    std::string message;
+    TimeUnit time_unit;
+    std::chrono::system_clock::time_point start_time;
+
+public:
+
+    TimeMeasurer(std::string&& message = "", TimeUnit const time_unit = TimeUnit::MILLISECOND):
+        message{message}, time_unit{time_unit}, start_time{std::chrono::high_resolution_clock::now()} {}
+
+public:
+
+    // TODO: tornar funções constantes em [[nodiscard]]
+
+    auto get_time() const {
+
+        auto const current_time = std::chrono::high_resolution_clock::now();
+        auto const elapsed_time = current_time - this->start_time;
+        switch (this->time_unit) {
             case MICROSECOND:
                 return std::chrono::duration_cast<std::chrono::microseconds>(elapsed_time).count();
             case MILLISECOND:
@@ -38,36 +56,20 @@ public:
         }
     }
 
-    void print_time() const
-    {
-        const auto elapsed_time = this->get_time();
+    void print_time() const {
+        auto const elapsed_time = this->get_time();
         std::cout << message << " in " << elapsed_time << this->unit_strings.at(this->time_unit) << std::endl;
     }
-
-private:
-    const std::unordered_map<TimeUnit, std::string> unit_strings
-    {
-        {MICROSECOND, "us"},
-        {MILLISECOND, "ms"},
-        {SECOND, "s"},
-    };
-
-    std::string message;
-    TimeUnit time_unit;
-
-    std::chrono::system_clock::time_point start_time;
-
 };
 
-template<class ElementT>
-inline std::ostream& operator <<(std::ostream& ostream, const std::vector<ElementT>& vector)
-{
+template <class ElementT>
+inline std::ostream& operator<<(std::ostream& ostream, std::vector<ElementT> const& vector) {
+
     ostream << "[ ";
-    for(size_t i = 0; i < vector.size() - 1; i++)
-    {
+    for (size_t i = 0; i < vector.size() - 1; i++) {
         ostream << vector[i] << ", ";
     }
-    ostream << vector[vector.size()-1] << " ]\n";
+    ostream << vector[vector.size() - 1] << " ]\n";
 
     return ostream;
 }

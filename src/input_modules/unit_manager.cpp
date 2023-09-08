@@ -1,66 +1,61 @@
+// header
 #include "unit_manager.hpp"
 
+// builtin
 #include <cstdint>
 #include <iostream>
 
+// extern
 #include "raylib.h"
 
-#include "../input_modules/camera.hpp"
+// local
 #include "../game_world/world.hpp"
+#include "../input_modules/camera.hpp"
 #include "../utils/utils.hpp"
 
-UnitMananger::UnitMananger(const HoverCamera* const camera)
-    :camera{camera}
-{
-    this->workers.emplace_back(boar::IndexVector2{20,20});
+
+
+UnitManager::UnitManager(HoverCamera const* const camera): camera{camera} {
+    this->workers.emplace_back(boar::IndexVector2{20, 20});
 }
 
-void UnitMananger::update(const float delta)
-{
-    for(Worker& worker : this->workers)
-    {
+void UnitManager::update(float const delta) {
+
+    for (Worker& worker: this->workers) {
         worker.update(delta);
     }
-    
-    if(game_world.current_input_mode != World::InputMode::COMMAND) return;
 
-    const bool is_inside_borders = game_world.is_inside_borders(camera->current_mouse_index);
+    if (game_world.current_input_mode != World::InputMode::COMMAND)
+        return;
 
-    if(IsMouseButtonDown(MOUSE_LEFT_BUTTON) && is_inside_borders)
-    {
+    bool const is_inside_borders = game_world.is_inside_borders(camera->current_mouse_index);
+
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && is_inside_borders) {
         this->workers[0].move_to(camera->current_mouse_index);
-
     }
 
-    if(IsKeyDown('T'))
-    {
+    if (IsKeyDown('T')) {
         auto total_time = 0;
         std::cout << "PF test\n";
-        boar::IndexVector2 origin{0,0};
-        for(int32_t x = 0; x < 300; x+=30)
-        {
+        boar::IndexVector2 origin{0, 0};
+        for (int32_t x = 0; x < 300; x += 30) {
 
-            for(int32_t z = 0; z < 300; z+=30)
-            {
-                boar::IndexVector2 target{x,z};
+            for (int32_t z = 0; z < 300; z += 30) {
+                boar::IndexVector2 target{x, z};
                 std::cout << target;
                 TimeMeasurer pathtimer{"Path found in"};
                 this->path = game_world.get_path(origin, target);
                 total_time += pathtimer.get_time();
                 pathtimer.print_time();
-
             }
         }
-        std::cout << "Found all 100 paths in " << total_time/1000 << "." << total_time%1000 << "s\n";
+        std::cout << "Found all 100 paths in " << total_time / 1000 << "." << total_time % 1000 << "s\n";
     }
-
-    
 }
 
-void UnitMananger::render() const
-{
-    for(const auto& tile : this->workers[0].path)
-    {
+void UnitManager::render() const {
+
+    for (auto const& tile: this->workers[0].path) {
         Vector3 pos{};
         pos.x = tile.x + 0.5;
         pos.y = 0;
@@ -68,10 +63,7 @@ void UnitMananger::render() const
         DrawCube(pos, 1, 0.1, 1, GREEN);
     }
 
-
-    for(const Worker& worker : this->workers)
-    {
+    for (Worker const& worker: this->workers) {
         worker.render();
     }
-
 }

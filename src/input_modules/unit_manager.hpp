@@ -1,24 +1,33 @@
 #pragma once
 
-#include "../utils/vector.hpp"
+// builtin
 #include <vector>
 
+// local
+#include "../utils/vector.hpp"
 #include "../game_world/game_objects/worker.hpp"
+
+
 
 class HoverCamera;
 
-class UnitMananger
-{
+class UnitManager {
+
 public:
-    UnitMananger(const HoverCamera* const camera);
 
     std::vector<boar::IndexVector2> path{};
-
     std::vector<Worker> workers;
 
-    void update(const float delta);
-    void render() const;
-
 private:
-    const HoverCamera* const camera;
+
+    HoverCamera const* const camera;
+
+public:
+
+    UnitManager(HoverCamera const* const camera);
+
+public:
+
+    void update(float const delta);
+    void render() const;
 };
