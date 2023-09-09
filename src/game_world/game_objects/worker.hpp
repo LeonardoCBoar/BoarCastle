@@ -1,42 +1,46 @@
 #pragma once
 
+// builtin
 #include <cstdint>
-#include <vector>
 #include <optional>
+#include <vector>
 
+// extern
 #include <raylib.h>
 
+// local
 #include "../../utils/vector.hpp"
 
-class Worker
-{
+
+
+class Worker {
+
 public:
+
     boar::IndexVector2 index{};
-
     Color color = RED;
-
     bool moving = false;
     boar::IndexVector2 step_target;
     boar::IndexVector2 target;
     std::vector<boar::IndexVector2> path;
 
-
 private:
-    constexpr static const int32_t SPEED = 30;
-    boar::Vector3f render_pos{};
 
+    constexpr static int32_t const SPEED = 30;
+    boar::Vector3f render_pos{};
     float step_progress = 0;
 
+public:
+
+    Worker(boar::IndexVector2 const pos);
 
 public:
-    Worker(const boar::IndexVector2 pos);
-    void move_to(const boar::IndexVector2 target);
 
-    void update(const float delta);
+    void move_to(boar::IndexVector2 const target);
+    void update(float const delta);
     void render() const;
 
 private:
-    void update_movement(const float delta);
-    
 
+    void update_movement(float const delta);
 };

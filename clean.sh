@@ -1,3 +1,5 @@
 #!/usr/bin/bash
 
-ls -A | git check-ignore --stdin | xargs rm -rf
+rm -rf build
+rm -rf vcpkg
+rm -rf cmake-build*

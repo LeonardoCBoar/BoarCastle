@@ -2,4 +2,6 @@
 /vcpkg/
 /.cache/
 /.vscode/
+/.idea/
+/cmake-build-*/
 /BoarCastle
