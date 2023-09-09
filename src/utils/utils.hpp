@@ -21,7 +21,7 @@ public:
 private:
 
     // TODO: tornar static
-    std::unordered_map<TimeUnit, std::string> const unit_strings {
+    std::unordered_map<TimeUnit, std::string> const unit_strings{
         {MICROSECOND, "us"},
         {MILLISECOND, "ms"},
         {SECOND, "s"},
@@ -34,13 +34,16 @@ private:
 public:
 
     TimeMeasurer(std::string&& message = "", TimeUnit const time_unit = TimeUnit::MILLISECOND):
-        message{message}, time_unit{time_unit}, start_time{std::chrono::high_resolution_clock::now()} {}
+        message{message}, time_unit{time_unit}, start_time{std::chrono::high_resolution_clock::now()}
+    {
+    }
 
 public:
 
     // TODO: tornar funções constantes em [[nodiscard]]
 
-    auto get_time() const {
+    auto get_time() const
+    {
 
         auto const current_time = std::chrono::high_resolution_clock::now();
         auto const elapsed_time = current_time - this->start_time;
@@ -56,14 +59,16 @@ public:
         }
     }
 
-    void print_time() const {
+    void print_time() const
+    {
         auto const elapsed_time = this->get_time();
         std::cout << message << " in " << elapsed_time << this->unit_strings.at(this->time_unit) << std::endl;
     }
 };
 
 template <class ElementT>
-inline std::ostream& operator<<(std::ostream& ostream, std::vector<ElementT> const& vector) {
+inline std::ostream& operator<<(std::ostream& ostream, std::vector<ElementT> const& vector)
+{
 
     ostream << "[ ";
     for (size_t i = 0; i < vector.size() - 1; i++) {

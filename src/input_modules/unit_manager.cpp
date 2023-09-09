@@ -15,11 +15,13 @@
 
 
 
-UnitManager::UnitManager(HoverCamera const* const camera): camera{camera} {
+UnitManager::UnitManager(HoverCamera const* const camera): camera{camera}
+{
     this->workers.emplace_back(boar::IndexVector2{20, 20});
 }
 
-void UnitManager::update(float const delta) {
+void UnitManager::update(float const delta)
+{
 
     for (Worker& worker: this->workers) {
         worker.update(delta);
@@ -53,7 +55,8 @@ void UnitManager::update(float const delta) {
     }
 }
 
-void UnitManager::render() const {
+void UnitManager::render() const
+{
 
     for (auto const& tile: this->workers[0].path) {
         Vector3 pos{};

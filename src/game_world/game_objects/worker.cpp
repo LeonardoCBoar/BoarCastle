@@ -15,11 +15,13 @@
 
 
 Worker::Worker(boar::IndexVector2 const pos):
-    index{pos}, step_target{pos}, target{pos}, render_pos{(float)pos.x, 0.5f, (float)pos.z} {
+    index{pos}, step_target{pos}, target{pos}, render_pos{(float)pos.x, 0.5f, (float)pos.z}
+{
     game_world.get_tile(this->index)->empty = false;
 }
 
-void Worker::move_to(boar::IndexVector2 const target) {
+void Worker::move_to(boar::IndexVector2 const target)
+{
     if (target == this->target || target == this->index)
         return;
 
@@ -40,7 +42,8 @@ void Worker::move_to(boar::IndexVector2 const target) {
     }
 }
 
-void Worker::update_movement(float const delta) {
+void Worker::update_movement(float const delta)
+{
 
     auto move_next_tile = [this] {
         auto get_next_tile = [this] {
@@ -87,11 +90,13 @@ void Worker::update_movement(float const delta) {
                                       this->index.z + 0.5f + (dir.z * step_progress)};
 }
 
-void Worker::update(float const delta) {
+void Worker::update(float const delta)
+{
     if (this->moving)
         this->update_movement(delta);
 }
 
-void Worker::render() const {
+void Worker::render() const
+{
     DrawSphere(render_pos, 0.5, this->color);
 }

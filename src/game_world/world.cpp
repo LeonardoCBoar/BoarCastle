@@ -20,7 +20,8 @@ MapTile::MapTile() = default;
 MapTile::MapTile(boar::IndexVector2 const index): index{index} {}
 
 
-bool MapTile::update_set() {
+bool MapTile::update_set()
+{
     bool updated = false;
     for (MapTile const* const neighbor: this->neighbors) {
         if (neighbor != nullptr && neighbor->empty && neighbor->set_id < this->set_id) {
@@ -31,7 +32,8 @@ bool MapTile::update_set() {
     return updated;
 }
 
-void MapTile::reset_pathfinding() {
+void MapTile::reset_pathfinding()
+{
     this->parent = nullptr;
     this->movement_cost = 0;
     this->distance_cost = 0;
@@ -40,7 +42,8 @@ void MapTile::reset_pathfinding() {
     this->visited = false;
 }
 
-void MapTile::setup_pathfinding(boar::IndexVector2 const target, MapTile* parent, int const parent_dir_index) {
+void MapTile::setup_pathfinding(boar::IndexVector2 const target, MapTile* parent, int const parent_dir_index)
+{
     this->parent = parent;
     if (this->parent != nullptr)
         this->movement_cost = parent->movement_cost + World::MOVEMENT_COST[parent_dir_index];
@@ -53,7 +56,8 @@ void MapTile::setup_pathfinding(boar::IndexVector2 const target, MapTile* parent
 }
 
 
-void World::set_tile_neighbors(MapTile* tile) {
+void World::set_tile_neighbors(MapTile* tile)
+{
     int tile_count = 0;
     for (int x = -1; x < 2; x++) {
         for (int z = -1; z < 2; z++) {
@@ -74,7 +78,8 @@ void World::set_tile_neighbors(MapTile* tile) {
     }
 }
 
-Path World::construct_path(boar::IndexVector2 const start_index, MapTile const* const target_tile) {
+Path World::construct_path(boar::IndexVector2 const start_index, MapTile const* const target_tile)
+{
     std::vector<boar::IndexVector2> path{};
 
     MapTile const* current_tile = target_tile;
@@ -86,7 +91,8 @@ Path World::construct_path(boar::IndexVector2 const start_index, MapTile const* 
     return path;
 }
 
-void World::update_tile_sets() {
+void World::update_tile_sets()
+{
     TimeMeasurer timer{"Sets updated in"};
     int32_t set_id = 0;
     for (auto& row: this->map) {
@@ -110,7 +116,8 @@ void World::update_tile_sets() {
     this->queued_set_update = false;
 }
 
-void World::reset_pathfinding() {
+void World::reset_pathfinding()
+{
     for (auto& row: this->map) {
         for (auto& tile: row) {
             tile.reset_pathfinding();
@@ -118,7 +125,8 @@ void World::reset_pathfinding() {
     }
 }
 
-auto World::get_minimum_cost_tile(std::list<MapTile*>& open_list) {
+auto World::get_minimum_cost_tile(std::list<MapTile*>& open_list)
+{
     auto current_tile_it = open_list.begin();
     int32_t current_tile_cost = (*current_tile_it)->total_cost;
 
@@ -132,7 +140,8 @@ auto World::get_minimum_cost_tile(std::list<MapTile*>& open_list) {
     return current_tile_it;
 }
 
-World::World() {
+World::World()
+{
     TimeMeasurer world_start{"world"};
 
 
@@ -156,7 +165,8 @@ World::World() {
     // std::cout << path;
 }
 
-Path World::get_path(boar::IndexVector2 const origin, boar::IndexVector2 const target) {
+Path World::get_path(boar::IndexVector2 const origin, boar::IndexVector2 const target)
+{
     this->check_update_set();
     this->reset_pathfinding();
     std::list<MapTile*> open{};
@@ -208,27 +218,32 @@ Path World::get_path(boar::IndexVector2 const origin, boar::IndexVector2 const t
     return Path{};
 }
 
-int32_t World::get_movement_cost(boar::IndexVector2 const direction) const {
+int32_t World::get_movement_cost(boar::IndexVector2 const direction) const
+{
     std::array<int32_t, 3> const movement_costs{1, LINEAR_DIST, DIAGONAL_DIST};
 
     return movement_costs[abs(direction.x) + abs(direction.z)];
 }
 
-MapTile* World::get_tile(boar::IndexVector2 const index) {
+MapTile* World::get_tile(boar::IndexVector2 const index)
+{
     return &map[index.x][index.z];
 }
 
-void World::add_wall(std::shared_ptr<Wall> wall) {
+void World::add_wall(std::shared_ptr<Wall> wall)
+{
     this->walls.push_back(wall);
     this->add_object_collision(wall);
 }
 
-void World::check_update_set() {
+void World::check_update_set()
+{
     if (this->queued_set_update)
         this->update_tile_sets();
 }
 
-void World::update() {
+void World::update()
+{
     if (IsKeyDown(KEY_ONE))
         this->current_input_mode = InputMode::CONSTRUCTION;
     else if (IsKeyDown(KEY_TWO)) {
@@ -237,7 +252,8 @@ void World::update() {
     }
 }
 
-void World::render() const {
+void World::render() const
+{
     for (auto const wall: this->walls) {
         wall->render();
     }

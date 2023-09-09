@@ -20,32 +20,14 @@ PenaltyReturnTypeOnItsOwnLine: 999999999
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: true
 BinPackParameters: true
-BreakBeforeBraces: Custom
-BraceWrapping:
-  BeforeElse: true
-  AfterCaseLabel: false
-  AfterClass: false
-  AfterControlStatement: Never
-  AfterEnum: false
-  AfterFunction: false
-  AfterNamespace: false
-  AfterStruct: false
-  AfterUnion: false
-  AfterExternBlock: false
-  BeforeCatch: false
-  BeforeLambdaBody: false
-  BeforeWhile: false
-  SplitEmptyFunction: false
-  SplitEmptyRecord: false
-  SplitEmptyNamespace: false
 KeepEmptyLinesAtTheStartOfBlocks: true
 BreakBeforeBinaryOperators: None
 BreakBeforeConceptDeclarations: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
 BreakInheritanceList: AfterColon
-BreakAfterAttributes: Always
 BreakStringLiterals: false
+BreakBeforeBraces: Stroustrup
 CompactNamespaces: false
 EmptyLineAfterAccessModifier: Always
 EmptyLineBeforeAccessModifier: Always

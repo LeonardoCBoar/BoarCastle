@@ -4,8 +4,8 @@
 #include <vector>
 
 // local
-#include "../utils/vector.hpp"
 #include "../game_world/game_objects/worker.hpp"
+#include "../utils/vector.hpp"
 
 
 

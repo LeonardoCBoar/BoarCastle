@@ -1,8 +1,8 @@
 #pragma once
 
 // builtin
-#include <ostream>
 #include <cstdlib>
+#include <ostream>
 
 // extern
 #include <raylib.h>

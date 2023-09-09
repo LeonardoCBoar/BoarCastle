@@ -13,7 +13,8 @@
 int const SCREEN_WIDTH = 1280;
 int const SCREEN_HEIGHT = 720;
 
-int main(void) {
+int main(void)
+{
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BoarCastle");
     HoverCamera camera{{10, 50, 10}};

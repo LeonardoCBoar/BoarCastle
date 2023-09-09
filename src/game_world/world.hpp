@@ -93,7 +93,8 @@ public:
     void render() const;
 
     template <class GameObject>
-    bool can_fit_object(std::shared_ptr<GameObject> const game_object) const {
+    bool can_fit_object(std::shared_ptr<GameObject> const game_object) const
+    {
         size_t const half_size_x = game_object->collision_matrix.size() / 2;
         size_t const half_size_z = game_object->collision_matrix.at(0).size() / 2;
 
@@ -109,7 +110,8 @@ public:
     }
 
     template <class GameObject>
-    void add_object_collision(std::shared_ptr<GameObject> const game_object) {
+    void add_object_collision(std::shared_ptr<GameObject> const game_object)
+    {
         size_t const half_size_x = game_object->collision_matrix.size() / 2;
         size_t const half_size_z = game_object->collision_matrix.at(0).size() / 2;
 
@@ -123,20 +125,24 @@ public:
     }
 
     template <class VectorT>
-    bool is_inside_borders(VectorT const point) const {
+    bool is_inside_borders(VectorT const point) const
+    {
         return this->is_inside_borders(static_cast<int32_t>(point.x), static_cast<int32_t>(point.z));
     }
 
-    bool is_inside_borders(int32_t const x, int32_t const z) const {
+    bool is_inside_borders(int32_t const x, int32_t const z) const
+    {
         return x >= 0 && x < this->SIZE.x && z >= 0 && z < this->SIZE.z;
     }
 
     template <class VectorT>
-    bool is_tile_empty(VectorT const point) const {
+    bool is_tile_empty(VectorT const point) const
+    {
         return this->is_tile_empty(static_cast<int32_t>(point.x), static_cast<int32_t>(point.z));
     }
 
-    bool is_tile_empty(int32_t const x, int32_t const z) const {
+    bool is_tile_empty(int32_t const x, int32_t const z) const
+    {
         return map[x][z].empty;
     }
 

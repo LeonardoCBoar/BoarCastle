@@ -19,20 +19,24 @@
 
 
 
-ConstructionManager::ConstructionManager(HoverCamera const* const camera): camera{camera} {
+ConstructionManager::ConstructionManager(HoverCamera const* const camera): camera{camera}
+{
     this->create_preview_wall();
 }
 
-void ConstructionManager::create_preview_wall(boar::IndexVector2 const mouse_index) {
+void ConstructionManager::create_preview_wall(boar::IndexVector2 const mouse_index)
+{
     this->preview_wall = std::make_shared<Wall>(mouse_index);
     this->preview_wall->color.a = 125;
 }
 
-void ConstructionManager::update() {
+void ConstructionManager::update()
+{
     this->handle_input();
 }
 
-void ConstructionManager::handle_input() {
+void ConstructionManager::handle_input()
+{
     if (game_world.current_input_mode != World::InputMode::CONSTRUCTION)
         return;
 
@@ -67,7 +71,8 @@ void ConstructionManager::handle_input() {
     }
 }
 
-void ConstructionManager::render() const {
+void ConstructionManager::render() const
+{
     if (game_world.current_input_mode != World::InputMode::CONSTRUCTION)
         return;
     // Preview Wall
