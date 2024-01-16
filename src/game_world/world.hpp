@@ -7,13 +7,16 @@
 #include <memory>
 #include <sys/types.h>
 #include <vector>
+#include <queue>
 
 // local
 #include "../utils/vector.hpp"
 
-
+#include "../input_modules/construction_manager.hpp"
+#include "../input_modules/unit_manager.hpp"
 
 class Wall;
+class HoverCamera;
 
 class MapTile {
 
@@ -58,8 +61,12 @@ public:
 
 public:
 
+    std::unique_ptr<ConstructionManager> construction_manager;
+    std::unique_ptr<UnitManager> unit_manager;
+    std::vector<std::shared_ptr<Wall>> walls;
+
     // TODO: remove meaningless constexpr
-    constexpr static boar::IndexVector2 const SIZE{600, 600};
+    constexpr static boar::IndexVector2 SIZE{600, 600};
     constexpr static size_t DIR_COUNT = 8;
     constexpr static int32_t LINEAR_DIST = 10;
     constexpr static int32_t DIAGONAL_DIST = 14;
@@ -70,9 +77,10 @@ public:
     bool queued_set_update = false;
 
 private:
-
     std::array<std::array<MapTile, SIZE.z>, SIZE.x> map;
-    std::vector<std::shared_ptr<Wall>> walls;
+
+private:
+
     void set_tile_neighbors(MapTile* tile);
     Path construct_path(boar::IndexVector2 const start_index, MapTile const* const target_tile);
     void update_tile_sets();
@@ -81,13 +89,13 @@ private:
 public:
 
     World();
+    void initialize_modules(const HoverCamera* const camera);
 
 public:
 
     int32_t get_movement_cost(boar::IndexVector2 const) const;
     Path get_path(boar::IndexVector2 const origin, boar::IndexVector2 const target);
     MapTile* get_tile(boar::IndexVector2 const);
-    void add_wall(std::shared_ptr<Wall> wall);
     void check_update_set();
     void update();
     void render() const;
@@ -95,8 +103,8 @@ public:
     template <class GameObject>
     bool can_fit_object(std::shared_ptr<GameObject> const game_object) const
     {
-        size_t const half_size_x = game_object->collision_matrix.size() / 2;
-        size_t const half_size_z = game_object->collision_matrix.at(0).size() / 2;
+        size_t const half_size_x = game_object->SIZE.x / 2;
+        size_t const half_size_z = game_object->SIZE.z / 2;
 
         boar::IndexVector3 const index = game_object->position.to_index(1);
         for (size_t x = index.x - half_size_x; x < index.x + half_size_x; x++) {
@@ -112,8 +120,8 @@ public:
     template <class GameObject>
     void add_object_collision(std::shared_ptr<GameObject> const game_object)
     {
-        size_t const half_size_x = game_object->collision_matrix.size() / 2;
-        size_t const half_size_z = game_object->collision_matrix.at(0).size() / 2;
+        size_t const half_size_x = game_object->SIZE.x / 2;
+        size_t const half_size_z = game_object->SIZE.z / 2;
 
         boar::IndexVector3 const index = game_object->position.to_index();
         for (size_t x = index.x - half_size_x; x < index.x + half_size_x; x++) {

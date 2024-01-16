@@ -139,7 +139,7 @@ namespace boar {
         }
 
         template <typename OtherNumberT>
-        inline CustomVector3<NumberT> operator/(OtherNumberT const& number) const
+        constexpr inline CustomVector3<NumberT> operator/(OtherNumberT const& number) const
         {
             return CustomVector3<NumberT>(this->x / number, this->y / number, this->z / number);
         }
@@ -211,7 +211,7 @@ namespace boar {
     using Vector3i32 = boar::CustomVector3<int32_t>;
     using Vector3d = boar::CustomVector3<double>;
     using Vector3f = boar::CustomVector3<float>;
-    using IndexVector3 = Vector3u32;
+    using IndexVector3 = Vector3i32;
 
 } // namespace boar
 

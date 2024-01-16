@@ -8,6 +8,7 @@
 #include <memory>
 #include <ostream>
 #include <type_traits>
+#include <stack>
 
 // extern
 #include <raylib.h>
@@ -16,7 +17,11 @@
 #include "../game_world/game_objects/wall.hpp"
 #include "../game_world/world.hpp"
 #include "../input_modules/camera.hpp"
+#include "../input_modules/unit_manager.hpp"
+#include "../game_world/game_objects/worker.hpp"
 
+#include <cstdlib> 
+#include <ctime> 
 
 
 ConstructionManager::ConstructionManager(HoverCamera const* const camera): camera{camera}
@@ -30,9 +35,46 @@ void ConstructionManager::create_preview_wall(boar::IndexVector2 const mouse_ind
     this->preview_wall->color.a = 125;
 }
 
+void ConstructionManager::assign_order(ConstructionOrder& order)
+{
+    // TODO: Select best worker
+    for(auto& worker : game_world.unit_manager->workers)
+    {
+        if(worker.target_construction == NULL)
+        {
+            order.state = IN_CONSTRUCTION;
+            worker.target_construction = &order;
+            break;
+        }
+    }
+
+}
+
 void ConstructionManager::update()
 {
     this->handle_input();
+
+    std::stack<size_t> indexes_to_remove;
+
+    for(auto& [index, order] : this->construction_queue)
+    {
+        switch (order.state)
+        {
+            case NOT_ASSIGNED:
+                assign_order(order);
+                break;
+            case IN_CONSTRUCTION:
+                break;
+            case INACESSIBLE:
+                //TODO: Logic to check again inacessible constructions
+                break;
+            case FINISHED:
+                game_world.walls.push_back(order.construction);
+                order.construction->color.a = MAX_CONSTRUCTION_TRANSPARENCY;
+                this->construction_queue.erase(index);
+                break;
+        }
+    }
 }
 
 void ConstructionManager::handle_input()
@@ -42,7 +84,8 @@ void ConstructionManager::handle_input()
 
     auto const selected_tile = camera->current_mouse_index;
 
-    if (!game_world.is_inside_borders(selected_tile)) {
+    if (!game_world.is_inside_borders(selected_tile)) 
+    {
         this->preview_wall->visible = false;
         return;
     }
@@ -51,28 +94,47 @@ void ConstructionManager::handle_input()
     this->preview_wall->move_to(selected_tile);
 
 
-    boar::Vector3u32 const half_wall_size = preview_wall->SIZE / 2;
     bool free_space = game_world.can_fit_object(preview_wall);
 
 
-    if (free_space) {
+    if (free_space)
+    {
         preview_wall->color = GRAY;
         preview_wall->color.a = 125;
     }
-    else {
+    else
+    {
         preview_wall->color = RED;
         preview_wall->color.a = 255;
     }
 
-    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && free_space) {
-        this->preview_wall->color = GRAY;
-        game_world.add_wall(this->preview_wall);
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && free_space)
+    {
+        std::cout << "Clicked Pos: " << this->preview_wall->position << std::endl;
+        game_world.add_object_collision(this->preview_wall);
+        this->construction_queue[this->order_id++] = {0, this->preview_wall};
         this->create_preview_wall(selected_tile);
     }
 }
 
 void ConstructionManager::render() const
 {
+    for(const auto& order : this->construction_queue)
+    {
+        order.second.construction->color.a = 
+            MIN_CONSTRUCTION_TRANSPARENCY + ( MAX_CONSTRUCTION_TRANSPARENCY - MIN_CONSTRUCTION_TRANSPARENCY) * order.second.progress;
+        order.second.construction->render();
+        const auto interaction_spots = order.second.construction->get_interaction_spots();
+
+        for(const auto& spot : interaction_spots)
+        {
+            if(game_world.is_inside_borders(spot) && game_world.is_tile_empty(spot))
+            {
+                DrawCube({(float)spot.x + 0.5f, 0, (float)spot.z + 0.5f}, 1, 0.1, 1, YELLOW);
+            }
+        }
+    }
+
     if (game_world.current_input_mode != World::InputMode::CONSTRUCTION)
         return;
     // Preview Wall

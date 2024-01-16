@@ -19,8 +19,7 @@ int main(void)
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BoarCastle");
     HoverCamera camera{{10, 50, 10}};
 
-    ConstructionManager construction_manager{&camera};
-    UnitManager unit_manager{&camera};
+    game_world.initialize_modules(&camera);
 
     SetTargetFPS(60);
     UpdateCamera(&camera, CAMERA_FREE);
@@ -30,8 +29,8 @@ int main(void)
         camera.update(delta_t);
         game_world.update();
 
-        construction_manager.update();
-        unit_manager.update(delta_t);
+        game_world.construction_manager->update();
+        game_world.unit_manager->update(delta_t);
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
@@ -42,8 +41,8 @@ int main(void)
         DrawGrid(1200 / 2, 2.0f);
 
         game_world.render();
-        construction_manager.render();
-        unit_manager.render();
+        game_world.construction_manager->render();
+        game_world.unit_manager->render();
 
         EndMode3D();
 

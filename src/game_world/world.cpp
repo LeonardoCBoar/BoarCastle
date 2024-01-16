@@ -13,7 +13,7 @@
 // local
 #include "../utils/utils.hpp"
 #include "game_objects/wall.hpp"
-
+#include "../input_modules/camera.hpp"
 
 
 MapTile::MapTile() = default;
@@ -165,6 +165,12 @@ World::World()
     // std::cout << path;
 }
 
+void World::initialize_modules(const HoverCamera* const camera)
+{
+    this->construction_manager = std::make_unique<ConstructionManager>(camera);
+    this->unit_manager = std::make_unique<UnitManager>(camera);
+}
+
 Path World::get_path(boar::IndexVector2 const origin, boar::IndexVector2 const target)
 {
     this->check_update_set();
@@ -230,12 +236,6 @@ MapTile* World::get_tile(boar::IndexVector2 const index)
     return &map[index.x][index.z];
 }
 
-void World::add_wall(std::shared_ptr<Wall> wall)
-{
-    this->walls.push_back(wall);
-    this->add_object_collision(wall);
-}
-
 void World::check_update_set()
 {
     if (this->queued_set_update)
@@ -254,7 +254,7 @@ void World::update()
 
 void World::render() const
 {
-    for (auto const wall: this->walls) {
+    for (auto const& wall: this->walls) {
         wall->render();
     }
 }
