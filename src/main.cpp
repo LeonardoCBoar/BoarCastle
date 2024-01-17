@@ -10,12 +10,11 @@
 
 
 
-int const SCREEN_WIDTH = 1280;
-int const SCREEN_HEIGHT = 720;
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 720;
 
 int main(void)
 {
-
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BoarCastle");
     HoverCamera camera{{10, 50, 10}};
 
@@ -24,8 +23,9 @@ int main(void)
     SetTargetFPS(60);
     UpdateCamera(&camera, CAMERA_FREE);
 
-    while (!WindowShouldClose()) {
-        float const delta_t = GetFrameTime();
+    while (!WindowShouldClose())
+    {
+        const float delta_t = GetFrameTime();
         camera.update(delta_t);
         game_world.update();
 

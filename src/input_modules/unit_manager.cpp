@@ -15,34 +15,37 @@
 
 
 
-UnitManager::UnitManager(HoverCamera const* const camera): camera{camera}
+UnitManager::UnitManager(const HoverCamera* const camera): camera{camera}
 {
     this->workers.emplace_back(boar::IndexVector2{20, 20});
 }
 
-void UnitManager::update(float const delta)
+void UnitManager::update(const float delta)
 {
-
-    for (Worker& worker: this->workers) {
+    for (Worker& worker: this->workers)
+    {
         worker.update(delta);
     }
 
     if (game_world.current_input_mode != World::InputMode::COMMAND)
         return;
 
-    bool const is_inside_borders = game_world.is_inside_borders(camera->current_mouse_index);
+    const bool is_inside_borders = game_world.is_inside_borders(camera->current_mouse_index);
 
-    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && is_inside_borders) {
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && is_inside_borders)
+    {
         this->workers[0].move_to(camera->current_mouse_index);
     }
 
-    if (IsKeyDown('T')) {
+    if (IsKeyDown('T'))
+    {
         auto total_time = 0;
         std::cout << "PF test\n";
         boar::IndexVector2 origin{0, 0};
-        for (int32_t x = 0; x < 300; x += 30) {
-
-            for (int32_t z = 0; z < 300; z += 30) {
+        for (int32_t x = 0; x < 300; x += 30)
+        {
+            for (int32_t z = 0; z < 300; z += 30)
+            {
                 boar::IndexVector2 target{x, z};
                 std::cout << target;
                 TimeMeasurer pathtimer{"Path found in"};
@@ -57,8 +60,8 @@ void UnitManager::update(float const delta)
 
 void UnitManager::render() const
 {
-
-    for (auto const& tile: this->workers[0].path) {
+    for (const auto& tile: this->workers[0].path)
+    {
         Vector3 pos{};
         pos.x = tile.x + 0.5;
         pos.y = 0;
@@ -66,7 +69,8 @@ void UnitManager::render() const
         DrawCube(pos, 1, 0.1, 1, GREEN);
     }
 
-    for (Worker const& worker: this->workers) {
+    for (const Worker& worker: this->workers)
+    {
         worker.render();
     }
 }

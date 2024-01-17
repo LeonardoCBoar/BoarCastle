@@ -16,7 +16,7 @@ HoverCamera::HoverCamera(boar::Vector3d const position)
     this->set_camera_angle(this->current_camera_angle);
 }
 
-void HoverCamera::update(float const delta_t)
+void HoverCamera::update(const float delta_t)
 {
     this->current_mouse_pos = this->get_ground_intersection_point();
     this->current_mouse_index = this->current_mouse_pos.to_index2();
@@ -40,22 +40,23 @@ void HoverCamera::update(float const delta_t)
 
 boar::Vector3d HoverCamera::get_ground_intersection_point() const
 {
-    Ray const mouse_ray = GetMouseRay(GetMousePosition(), *this);
+    const Ray mouse_ray = GetMouseRay(GetMousePosition(), *this);
 
     // Distance: Amount of dir vectors necessary to reach intersection point
-    double const distance = (-mouse_ray.position.y) / mouse_ray.direction.y;
+    const double distance = (-mouse_ray.position.y) / mouse_ray.direction.y;
     boar::Vector3d const intersection_point = mouse_ray.position + mouse_ray.direction * distance;
 
     return intersection_point;
 }
 
 
-void HoverCamera::hover_camera(Direction dir_index, double const delta_t)
+void HoverCamera::hover_camera(Direction dir_index, const double delta_t)
 {
     boar::Vector3d const current_dir = this->get_current_dir();
     boar::Vector3d movement_dir = current_dir;
 
-    switch (dir_index) {
+    switch (dir_index)
+    {
         case Direction::FRONT:
             movement_dir = current_dir;
             break;
@@ -76,15 +77,16 @@ void HoverCamera::hover_camera(Direction dir_index, double const delta_t)
     this->set_camera_angle(this->current_camera_angle);
 }
 
-void HoverCamera::rotate_camera(double const angle_delta, double const delta_t)
+void HoverCamera::rotate_camera(const double angle_delta, const double delta_t)
 {
-    double const new_angle = this->current_camera_angle + (angle_delta * delta_t);
+    const double new_angle = this->current_camera_angle + (angle_delta * delta_t);
     this->set_camera_angle(new_angle);
 }
 
-void HoverCamera::lift_camera(double const movement, double const delta_t)
+void HoverCamera::lift_camera(const double movement, const double delta_t)
 {
-    if (movement != 0) {
+    if (movement != 0)
+    {
         this->position.y += movement * LIFT_SPEED * delta_t;
         if (this->position.y > this->MAX_ZOOM_OUT)
             this->position.y = MAX_ZOOM_OUT;
@@ -95,7 +97,7 @@ void HoverCamera::lift_camera(double const movement, double const delta_t)
     }
 }
 
-void HoverCamera::set_camera_angle(double const new_angle)
+void HoverCamera::set_camera_angle(const double new_angle)
 {
     this->current_camera_angle = new_angle;
     boar::Vector3d const looking_dir{static_cast<double>(cos(new_angle)), -1, static_cast<double>(sin(new_angle))};

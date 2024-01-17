@@ -8,11 +8,12 @@
 
 
 
-class TimeMeasurer {
-
+class TimeMeasurer
+{
 public:
 
-    enum TimeUnit {
+    enum TimeUnit
+    {
         MICROSECOND,
         MILLISECOND,
         SECOND
@@ -21,7 +22,7 @@ public:
 private:
 
     // TODO: tornar static
-    std::unordered_map<TimeUnit, std::string> const unit_strings{
+    const std::unordered_map<TimeUnit, std::string> unit_strings{
         {MICROSECOND, "us"},
         {MILLISECOND, "ms"},
         {SECOND, "s"},
@@ -33,7 +34,7 @@ private:
 
 public:
 
-    TimeMeasurer(std::string&& message = "", TimeUnit const time_unit = TimeUnit::MILLISECOND):
+    TimeMeasurer(std::string&& message = "", const TimeUnit time_unit = TimeUnit::MILLISECOND):
         message{message}, time_unit{time_unit}, start_time{std::chrono::high_resolution_clock::now()}
     {
     }
@@ -44,10 +45,10 @@ public:
 
     auto get_time() const
     {
-
-        auto const current_time = std::chrono::high_resolution_clock::now();
-        auto const elapsed_time = current_time - this->start_time;
-        switch (this->time_unit) {
+        const auto current_time = std::chrono::high_resolution_clock::now();
+        const auto elapsed_time = current_time - this->start_time;
+        switch (this->time_unit)
+        {
             case MICROSECOND:
                 return std::chrono::duration_cast<std::chrono::microseconds>(elapsed_time).count();
             case MILLISECOND:
@@ -61,17 +62,17 @@ public:
 
     void print_time() const
     {
-        auto const elapsed_time = this->get_time();
+        const auto elapsed_time = this->get_time();
         std::cout << message << " in " << elapsed_time << this->unit_strings.at(this->time_unit) << std::endl;
     }
 };
 
 template <class ElementT>
-inline std::ostream& operator<<(std::ostream& ostream, std::vector<ElementT> const& vector)
+inline std::ostream& operator<<(std::ostream& ostream, const std::vector<ElementT>& vector)
 {
-
     ostream << "[ ";
-    for (size_t i = 0; i < vector.size() - 1; i++) {
+    for (size_t i = 0; i < vector.size() - 1; i++)
+    {
         ostream << vector[i] << ", ";
     }
     ostream << vector[vector.size() - 1] << " ]\n";

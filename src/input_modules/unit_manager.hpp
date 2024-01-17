@@ -11,8 +11,8 @@
 
 class HoverCamera;
 
-class UnitManager {
-
+class UnitManager
+{
 public:
 
     std::vector<boar::IndexVector2> path{};
@@ -20,14 +20,14 @@ public:
 
 private:
 
-    HoverCamera const* const camera;
+    const HoverCamera* const camera;
 
 public:
 
-    UnitManager(HoverCamera const* const camera);
+    UnitManager(const HoverCamera* const camera);
 
 public:
 
-    void update(float const delta);
+    void update(const float delta);
     void render() const;
 };

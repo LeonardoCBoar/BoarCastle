@@ -2,21 +2,23 @@
 
 // builtin
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <vector>
-#include <memory>
 
 // extern
 #include <raylib.h>
 
 // local
-#include "../../utils/vector.hpp"
 #include "../../input_modules/construction_order.hpp"
+#include "../../utils/vector.hpp"
+
+
 
 class Wall;
 
-class Worker {
-
+class Worker
+{
     enum WorkerState
     {
         IDLE,
@@ -25,6 +27,7 @@ class Worker {
     };
 
 public:
+
     Color color = RED;
 
     boar::IndexVector2 index{};
@@ -37,8 +40,8 @@ public:
 
 private:
 
-    constexpr static int32_t const MOVE_SPEED = 30;
-    constexpr static float   const BUILD_SPEED = 2.0;
+    constexpr static const int32_t MOVE_SPEED = 30;
+    constexpr static const float BUILD_SPEED = 2.0;
     boar::Vector3f render_pos{};
     float step_progress = 0;
 
@@ -52,10 +55,10 @@ public:
     void construct(ConstructionOrder* target_construction);
     void close_current_order(const ConstructionOrderState close_state);
 
-    void update(float const delta);
+    void update(const float delta);
     void render() const;
 
 private:
 
-    void update_movement(float const delta);
+    void update_movement(const float delta);
 };

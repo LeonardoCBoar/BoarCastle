@@ -7,24 +7,24 @@
 #include <iostream>
 #include <memory>
 #include <ostream>
-#include <type_traits>
 #include <stack>
+#include <type_traits>
+#include <cstdlib>
+#include <ctime>
 
 // extern
 #include <raylib.h>
 
 // local
 #include "../game_world/game_objects/wall.hpp"
+#include "../game_world/game_objects/worker.hpp"
 #include "../game_world/world.hpp"
 #include "../input_modules/camera.hpp"
 #include "../input_modules/unit_manager.hpp"
-#include "../game_world/game_objects/worker.hpp"
-
-#include <cstdlib> 
-#include <ctime> 
 
 
-ConstructionManager::ConstructionManager(HoverCamera const* const camera): camera{camera}
+
+ConstructionManager::ConstructionManager(const HoverCamera* const camera): camera{camera}
 {
     this->create_preview_wall();
 }
@@ -38,16 +38,15 @@ void ConstructionManager::create_preview_wall(boar::IndexVector2 const mouse_ind
 void ConstructionManager::assign_order(ConstructionOrder& order)
 {
     // TODO: Select best worker
-    for(auto& worker : game_world.unit_manager->workers)
+    for (auto& worker: game_world.unit_manager->workers)
     {
-        if(worker.target_construction == NULL)
+        if (worker.target_construction == NULL)
         {
             order.state = IN_CONSTRUCTION;
             worker.target_construction = &order;
             break;
         }
     }
-
 }
 
 void ConstructionManager::update()
@@ -56,7 +55,7 @@ void ConstructionManager::update()
 
     std::stack<size_t> indexes_to_remove;
 
-    for(auto& [index, order] : this->construction_queue)
+    for (auto& [index, order]: this->construction_queue)
     {
         switch (order.state)
         {
@@ -66,7 +65,7 @@ void ConstructionManager::update()
             case IN_CONSTRUCTION:
                 break;
             case INACESSIBLE:
-                //TODO: Logic to check again inacessible constructions
+                // TODO: Logic to check again inacessible constructions
                 break;
             case FINISHED:
                 game_world.walls.push_back(order.construction);
@@ -82,9 +81,9 @@ void ConstructionManager::handle_input()
     if (game_world.current_input_mode != World::InputMode::CONSTRUCTION)
         return;
 
-    auto const selected_tile = camera->current_mouse_index;
+    const auto selected_tile = camera->current_mouse_index;
 
-    if (!game_world.is_inside_borders(selected_tile)) 
+    if (!game_world.is_inside_borders(selected_tile))
     {
         this->preview_wall->visible = false;
         return;
@@ -119,16 +118,17 @@ void ConstructionManager::handle_input()
 
 void ConstructionManager::render() const
 {
-    for(const auto& order : this->construction_queue)
+    for (const auto& order: this->construction_queue)
     {
-        order.second.construction->color.a = 
-            MIN_CONSTRUCTION_TRANSPARENCY + ( MAX_CONSTRUCTION_TRANSPARENCY - MIN_CONSTRUCTION_TRANSPARENCY) * order.second.progress;
+        order.second.construction->color.a =
+            MIN_CONSTRUCTION_TRANSPARENCY +
+            (MAX_CONSTRUCTION_TRANSPARENCY - MIN_CONSTRUCTION_TRANSPARENCY) * order.second.progress;
         order.second.construction->render();
         const auto interaction_spots = order.second.construction->get_interaction_spots();
 
-        for(const auto& spot : interaction_spots)
+        for (const auto& spot: interaction_spots)
         {
-            if(game_world.is_inside_borders(spot) && game_world.is_tile_empty(spot))
+            if (game_world.is_inside_borders(spot) && game_world.is_tile_empty(spot))
             {
                 DrawCube({(float)spot.x + 0.5f, 0, (float)spot.z + 0.5f}, 1, 0.1, 1, YELLOW);
             }
