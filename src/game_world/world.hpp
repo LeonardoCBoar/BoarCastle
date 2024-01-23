@@ -106,15 +106,15 @@ public:
     template <class GameObject>
     bool can_fit_object(const std::shared_ptr<GameObject> game_object) const
     {
-        const size_t half_size_x = game_object->SIZE.x / 2;
-        const size_t half_size_z = game_object->SIZE.z / 2;
+        const int32_t half_size_x = game_object->SIZE.x / 2;
+        const int32_t half_size_z = game_object->SIZE.z / 2;
 
         boar::IndexVector3 const index = game_object->position.to_index(1);
-        for (size_t x = index.x - half_size_x; x < index.x + half_size_x; x++)
+        for (int32_t x = index.x - half_size_x; x < index.x + half_size_x; x++)
         {
-            for (size_t z = index.z - half_size_z; z < index.z + half_size_z; z++)
+            for (int32_t z = index.z - half_size_z; z < index.z + half_size_z; z++)
             {
-                if (!this->is_tile_empty(x, z))
+                if (!this->is_inside_borders(x, z) || !this->is_tile_empty(x, z))
                     return false;
             }
         }
