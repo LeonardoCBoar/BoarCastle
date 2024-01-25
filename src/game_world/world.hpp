@@ -8,6 +8,7 @@
 #include <queue>
 #include <sys/types.h>
 #include <vector>
+#include <assert.h>
 
 // local
 #include "../utils/vector.hpp"
@@ -136,7 +137,7 @@ public:
                 this->map[x][z].empty = false;
             }
         }
-        this->queued_set_update = true;
+        // this->queued_set_update = true;
     }
 
     template <class VectorT>
@@ -158,6 +159,8 @@ public:
 
     bool is_tile_empty(const int32_t x, const int32_t z) const
     {
+        assert(x >= 0 && x < SIZE.x);
+        assert(z >= 0 && z < SIZE.z);
         return map[x][z].empty;
     }
 

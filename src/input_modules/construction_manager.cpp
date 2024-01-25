@@ -109,7 +109,6 @@ void ConstructionManager::handle_input()
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && free_space)
     {
-        std::cout << "Clicked Pos: " << this->preview_wall->position << std::endl;
         game_world.add_object_collision(this->preview_wall);
         this->construction_queue[this->order_id++] = {0, this->preview_wall};
         this->create_preview_wall(selected_tile);

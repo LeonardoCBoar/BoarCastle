@@ -28,26 +28,29 @@ bool Worker::move_to(boar::IndexVector2 const target)
         return false;
 
     TimeMeasurer worker{"found worker path in "};
+
+    Path new_path;
     if (current_state == Worker::MOVING)
     {
-        auto new_path = game_world.get_path(this->step_target, target);
-        this->path = new_path;
+        new_path = game_world.get_path(this->step_target, target);
     }
     else
     {
-        this->path = game_world.get_path(this->index, target);
+        new_path = game_world.get_path(this->index, target);
     }
+
 
     worker.print_time();
 
-    if (!this->path.empty())
-    {
-        this->target = target;
-        current_state = Worker::MOVING;
-        return true;
-    }
+    if (new_path.empty())
+        return false;
 
-    return false;
+    current_state = Worker::MOVING;
+    this->path = new_path;
+    this->target = target;
+    this->step_target = this->pop_next_movement();
+    return true;
+
 }
 
 void Worker::construct(ConstructionOrder* target_construction)
@@ -61,47 +64,54 @@ void Worker::close_current_order(const ConstructionOrderState close_state)
     this->target_construction = nullptr;
 }
 
-void Worker::update_movement(const float delta)
+boar::IndexVector2 Worker::pop_next_movement()
+{
+    assert(this->path.size() > 0);
+    auto next_movement = this->path.back();
+    this->path.pop_back();
+    return next_movement;
+}
+
+bool Worker::try_move_next_tile()
 {
     // TODO: Worker cannot recover if there's no path to the target when he's in the middle of it
 
-    auto move_next_tile = [this]
+    this->step_target = this->pop_next_movement();
+    if (game_world.is_tile_empty(this->step_target))
+        return true;
+
+    do
     {
-        auto get_next_tile = [this]
+        if(this->path.size() > 0)
         {
-            bool equal_zero = this->path.size() == 0;
-            this->step_target = this->path.back(); // TODO: Handle case when theres is no more empty paths
-            this->path.pop_back();
-            if (equal_zero)
-                std::cout << "back when size == 0 " << this->step_target;
-        };
-
-        if (!game_world.is_tile_empty(this->step_target))
-        {
-            do
-            {
-                get_next_tile();
-            } while (!game_world.is_tile_empty(this->step_target)); // TODO: There's a crash here
-
-            auto outline_path = game_world.get_path(this->index, this->step_target);
-            std::cout << "Outline path size: " << outline_path.size() << "\n"; // TODO: Review print always being called
-            this->path.insert(this->path.end(), outline_path.begin(), outline_path.end());
-            get_next_tile();
+            this->step_target = this->pop_next_movement();
         }
-    };
+        else
+            return false;
+        
+    } while (!game_world.is_tile_empty(this->step_target)); // TODO: There's a crash here
 
+    auto outline_path = game_world.get_path(this->index, this->step_target);
+    this->path.insert(this->path.end(), outline_path.begin(), outline_path.end());
+    this->step_target = this->pop_next_movement();
 
-    if (this->step_target == this->index)
-    {
-        move_next_tile();
-    }
+    return true;
+}
+
+void Worker::update_movement(const float delta)
+{
 
     boar::IndexVector2 const dir = this->step_target - this->index;
+    assert(this->step_target != this->index);
+    assert(dir.x <= 1);
+    assert(dir.z <= 1);
+
     const float movement_cost = game_world.get_movement_cost(dir);
 
     this->step_progress += delta * Worker::MOVE_SPEED / movement_cost;
     if (this->step_progress > 1)
     {
+        //TODO: step target must be reserved at the begining of the movement
         game_world.get_tile(this->index)->empty = true;
         game_world.get_tile(this->step_target)->empty = false;
         this->step_progress -= 1;
@@ -113,7 +123,12 @@ void Worker::update_movement(const float delta)
         }
         else
         {
-            move_next_tile();
+            const bool can_continue_moving = try_move_next_tile();
+            if (!can_continue_moving)
+            {
+                this->current_state = IDLE;
+                this->step_progress = 0;
+            }
         }
     }
 
@@ -124,16 +139,14 @@ void Worker::update_movement(const float delta)
 
 void Worker::update(const float delta)
 {
-    // std::cout << "Current State: " << this->current_state << std::endl;
     switch (this->current_state)
     {
         case IDLE:
             if (this->target_construction != nullptr)
             {
                 auto interaction_spots = this->target_construction->construction->get_interaction_spots();
-                std::optional<boar::IndexVector2> possible_interaction_spot = std::nullopt;
-                bool can_build_range = false;
 
+                bool can_build_range = false;
                 for (const auto& spot: interaction_spots)
                 {
                     if (!game_world.is_inside_borders(spot))
@@ -144,26 +157,31 @@ void Worker::update(const float delta)
                         can_build_range = true;
                         break;
                     }
-                    else if (game_world.is_tile_empty(spot))
-                        possible_interaction_spot = spot;
                 }
 
-                // TODO: Handle no path case
                 if (can_build_range)
-                    this->current_state = BUILDING;
-                else if (possible_interaction_spot.has_value())
                 {
-                    const bool found_path = this->move_to(possible_interaction_spot.value());
-                    if (!found_path)
-                    {
-                        std::cout << "No path found to building\n";
-                        this->close_current_order(INACESSIBLE);
-                    }
+                    this->current_state = BUILDING;
                 }
                 else
                 {
-                    std::cout << "Building cannot be accessed\n";
-                    this->close_current_order(INACESSIBLE);
+                    bool found_path;
+                    for(const auto& spot : interaction_spots )
+                    {
+                        if (!game_world.is_inside_borders(spot) || !game_world.is_tile_empty(spot))
+                            continue;
+
+                        found_path = this->move_to(spot);
+                        if (found_path)
+                        {
+                            break;
+                        }
+                    }
+                    if (!found_path)
+                    {
+                        this->close_current_order(INACESSIBLE);
+                    }
+                
                 }
             }
             break;
@@ -175,7 +193,6 @@ void Worker::update(const float delta)
             this->target_construction->progress += BUILD_SPEED * delta;
             if (this->target_construction->progress >= 1.0f)
             {
-                std::cout << "Finished construction!!!\n";
                 this->close_current_order(FINISHED);
                 this->current_state = IDLE;
             }

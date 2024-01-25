@@ -40,8 +40,8 @@ public:
 
 private:
 
-    constexpr static const int32_t MOVE_SPEED = 30;
-    constexpr static const float BUILD_SPEED = 2.0;
+    constexpr static const int32_t MOVE_SPEED = 50;
+    constexpr static const float BUILD_SPEED = 4.0;
     boar::Vector3f render_pos{};
     float step_progress = 0;
 
@@ -60,5 +60,7 @@ public:
 
 private:
 
+    boar::IndexVector2 pop_next_movement();
+    bool try_move_next_tile();
     void update_movement(const float delta);
 };

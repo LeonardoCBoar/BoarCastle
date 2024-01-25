@@ -12,10 +12,12 @@
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
+std::string const WINDOW_NAME = "BoarCastle";
 
 int main(void)
 {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "BoarCastle");
+    SetTraceLogLevel(LOG_WARNING);
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_NAME.c_str());
     HoverCamera camera{{10, 50, 10}};
 
     game_world.initialize_modules(&camera);

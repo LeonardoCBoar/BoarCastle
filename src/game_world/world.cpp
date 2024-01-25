@@ -178,7 +178,7 @@ World::World()
     }
     world_start.print_time();
 
-    this->update_tile_sets();
+    // this->update_tile_sets();
     TimeMeasurer a{"aaaaaa"};
     const auto path = this->get_path(boar::IndexVector2(1, 1), boar::IndexVector2(200, 3));
     a.print_time();
@@ -193,7 +193,7 @@ void World::initialize_modules(const HoverCamera* const camera)
 
 Path World::get_path(boar::IndexVector2 const origin, boar::IndexVector2 const target)
 {
-    this->check_update_set();
+    // this->check_update_set();
     this->reset_pathfinding();
     std::list<MapTile*> open{};
 
@@ -203,8 +203,8 @@ Path World::get_path(boar::IndexVector2 const origin, boar::IndexVector2 const t
     MapTile* target_tile = this->get_tile(target);
     // std::cout << origin_tile->set_id << "->" << target_tile->set_id << "\n";
 
-    if (origin_tile->set_id != target_tile->set_id)
-        return Path{};
+    // if (origin_tile->set_id != target_tile->set_id)
+    //     return Path{};
 
 
     origin_tile->setup_pathfinding(target, nullptr, 0);
