@@ -17,9 +17,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(BoarCastle
     src/main.cpp
-    src/input_modules/camera.cpp
-    src/input_modules/construction_manager.cpp
-    src/input_modules/unit_manager.cpp
+    src/managers/camera.cpp
+    src/managers/construction_manager.cpp
+    src/managers/unit_manager.cpp
     src/game_world/game_objects/wall.cpp
     src/game_world/game_objects/worker.cpp
     src/game_world/world.cpp

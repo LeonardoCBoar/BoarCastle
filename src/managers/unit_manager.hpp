@@ -6,6 +6,7 @@
 // local
 #include "../game_world/game_objects/worker.hpp"
 #include "../utils/vector.hpp"
+#include "pod/input_data.hpp"
 
 
 
@@ -18,16 +19,12 @@ public:
     std::vector<boar::IndexVector2> path{};
     std::vector<Worker> workers;
 
-private:
+public:
 
-    const HoverCamera* const camera;
+    UnitManager();
 
 public:
 
-    UnitManager(const HoverCamera* const camera);
-
-public:
-
-    void update(const float delta);
+    void update(const float delta, const InputData& input_data);
     void render() const;
 };

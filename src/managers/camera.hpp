@@ -28,7 +28,7 @@ enum Orientation
 
 class HoverCamera : public Camera3D
 {
-public:
+private:
 
     double HOVER_SPEED = 50;
     double LIFT_SPEED = 600;
@@ -37,7 +37,7 @@ public:
 
     double current_camera_angle = 0;
 
-    boar::Vector3d current_mouse_pos{};
+public:
     boar::IndexVector2 current_mouse_index{};
 
 public:

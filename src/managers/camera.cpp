@@ -18,8 +18,8 @@ HoverCamera::HoverCamera(boar::Vector3d const position)
 
 void HoverCamera::update(const float delta_t)
 {
-    this->current_mouse_pos = this->get_ground_intersection_point();
-    this->current_mouse_index = this->current_mouse_pos.to_index2();
+    boar::Vector3d current_mouse_pos = this->get_ground_intersection_point();
+    this->current_mouse_index = current_mouse_pos.to_index2();
 
     if (IsKeyDown('W') || IsKeyDown(KEY_UP))
         this->hover_camera(Direction::FRONT, delta_t);

@@ -10,17 +10,16 @@
 
 // local
 #include "../game_world/world.hpp"
-#include "../input_modules/camera.hpp"
 #include "../utils/utils.hpp"
 
 
 
-UnitManager::UnitManager(const HoverCamera* const camera): camera{camera}
+UnitManager::UnitManager()
 {
     this->workers.emplace_back(boar::IndexVector2{20, 20});
 }
 
-void UnitManager::update(const float delta)
+void UnitManager::update(const float delta, const InputData& input_data)
 {
     for (Worker& worker: this->workers)
     {
@@ -30,11 +29,11 @@ void UnitManager::update(const float delta)
     if (game_world.current_input_mode != World::InputMode::COMMAND)
         return;
 
-    const bool is_inside_borders = game_world.is_inside_borders(camera->current_mouse_index);
+    const bool is_inside_borders = game_world.is_inside_borders(input_data.mouse_index);
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && is_inside_borders)
     {
-        this->workers[0].move_to(camera->current_mouse_index);
+        this->workers[0].move_to(input_data.mouse_index);
     }
 
     if (IsKeyDown('T'))

@@ -19,12 +19,11 @@
 #include "../game_world/game_objects/wall.hpp"
 #include "../game_world/game_objects/worker.hpp"
 #include "../game_world/world.hpp"
-#include "../input_modules/camera.hpp"
-#include "../input_modules/unit_manager.hpp"
+#include "../managers/unit_manager.hpp"
 
 
 
-ConstructionManager::ConstructionManager(const HoverCamera* const camera): camera{camera}
+ConstructionManager::ConstructionManager()
 {
     this->create_preview_wall();
 }
@@ -49,9 +48,9 @@ void ConstructionManager::assign_order(ConstructionOrder& order)
     }
 }
 
-void ConstructionManager::update()
+void ConstructionManager::update(const InputData& input_data)
 {
-    this->handle_input();
+    this->handle_input(input_data);
 
     std::stack<size_t> indexes_to_remove;
 
@@ -76,12 +75,12 @@ void ConstructionManager::update()
     }
 }
 
-void ConstructionManager::handle_input()
+void ConstructionManager::handle_input(const InputData& input_data)
 {
     if (game_world.current_input_mode != World::InputMode::CONSTRUCTION)
         return;
 
-    const auto selected_tile = camera->current_mouse_index;
+    const auto selected_tile = input_data.mouse_index;
 
     if (!game_world.is_inside_borders(selected_tile))
     {

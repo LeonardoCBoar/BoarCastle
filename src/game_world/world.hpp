@@ -5,15 +5,13 @@
 #include <cstdint>
 #include <list>
 #include <memory>
-#include <queue>
 #include <sys/types.h>
-#include <vector>
 #include <assert.h>
 
 // local
 #include "../utils/vector.hpp"
-#include "../input_modules/construction_manager.hpp"
-#include "../input_modules/unit_manager.hpp"
+#include "../managers/construction_manager.hpp"
+#include "../managers/unit_manager.hpp"
 
 
 
@@ -93,7 +91,6 @@ private:
 public:
 
     World();
-    void initialize_modules(const HoverCamera* const camera);
 
 public:
 

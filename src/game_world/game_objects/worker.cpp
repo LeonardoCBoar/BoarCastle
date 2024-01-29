@@ -11,7 +11,7 @@
 #include <raylib.h>
 
 // local
-#include "../../input_modules/construction_manager.hpp"
+#include "../../managers/construction_manager.hpp"
 #include "../../utils/utils.hpp"
 #include "../world.hpp"
 #include "wall.hpp"

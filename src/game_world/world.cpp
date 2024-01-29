@@ -2,16 +2,12 @@
 #include "world.hpp"
 
 // builtin
-#include <algorithm>
 #include <list>
-#include <memory>
-#include <vector>
 
 // extern
 #include "raylib.h"
 
 // local
-#include "../input_modules/camera.hpp"
 #include "../utils/utils.hpp"
 #include "game_objects/wall.hpp"
 
@@ -179,19 +175,12 @@ World::World()
     world_start.print_time();
 
     // this->update_tile_sets();
-    TimeMeasurer a{"aaaaaa"};
-    const auto path = this->get_path(boar::IndexVector2(1, 1), boar::IndexVector2(200, 3));
-    a.print_time();
-    // std::cout << path;
+
+    this->construction_manager = std::make_unique<ConstructionManager>();
+    this->unit_manager = std::make_unique<UnitManager>();
 }
 
-void World::initialize_modules(const HoverCamera* const camera)
-{
-    this->construction_manager = std::make_unique<ConstructionManager>(camera);
-    this->unit_manager = std::make_unique<UnitManager>(camera);
-}
-
-Path World::get_path(boar::IndexVector2 const origin, boar::IndexVector2 const target)
+Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target)
 {
     // this->check_update_set();
     this->reset_pathfinding();
@@ -200,7 +189,6 @@ Path World::get_path(boar::IndexVector2 const origin, boar::IndexVector2 const t
     // std::cout << origin << target;
 
     MapTile* origin_tile = this->get_tile(origin);
-    MapTile* target_tile = this->get_tile(target);
     // std::cout << origin_tile->set_id << "->" << target_tile->set_id << "\n";
 
     // if (origin_tile->set_id != target_tile->set_id)
