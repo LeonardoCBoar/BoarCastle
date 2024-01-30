@@ -50,7 +50,7 @@ boar::Vector3d HoverCamera::get_ground_intersection_point() const
 }
 
 
-void HoverCamera::hover_camera(Direction dir_index, const double delta_t)
+void HoverCamera::hover_camera(const Direction dir_index, const double delta_t)
 {
     boar::Vector3d const current_dir = this->get_current_dir();
     boar::Vector3d movement_dir = current_dir;

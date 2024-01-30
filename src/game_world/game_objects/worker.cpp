@@ -50,7 +50,6 @@ bool Worker::move_to(boar::IndexVector2 const target)
     this->target = target;
     this->step_target = this->pop_next_movement();
     return true;
-
 }
 
 void Worker::construct(ConstructionOrder* target_construction)
@@ -82,13 +81,13 @@ bool Worker::try_move_next_tile()
 
     do
     {
-        if(this->path.size() > 0)
+        if (this->path.size() > 0)
         {
             this->step_target = this->pop_next_movement();
         }
         else
             return false;
-        
+
     } while (!game_world.is_tile_empty(this->step_target)); // TODO: There's a crash here
 
     auto outline_path = game_world.get_path(this->index, this->step_target);
@@ -100,7 +99,6 @@ bool Worker::try_move_next_tile()
 
 void Worker::update_movement(const float delta)
 {
-
     boar::IndexVector2 const dir = this->step_target - this->index;
     assert(this->step_target != this->index);
     assert(dir.x <= 1);
@@ -111,7 +109,7 @@ void Worker::update_movement(const float delta)
     this->step_progress += delta * Worker::MOVE_SPEED / movement_cost;
     if (this->step_progress > 1)
     {
-        //TODO: step target must be reserved at the begining of the movement
+        // TODO: step target must be reserved at the begining of the movement
         game_world.get_tile(this->index)->empty = true;
         game_world.get_tile(this->step_target)->empty = false;
         this->step_progress -= 1;
@@ -166,7 +164,7 @@ void Worker::update(const float delta)
                 else
                 {
                     bool found_path;
-                    for(const auto& spot : interaction_spots )
+                    for (const auto& spot: interaction_spots)
                     {
                         if (!game_world.is_inside_borders(spot) || !game_world.is_tile_empty(spot))
                             continue;
@@ -181,7 +179,6 @@ void Worker::update(const float delta)
                     {
                         this->close_current_order(INACESSIBLE);
                     }
-                
                 }
             }
             break;

@@ -2,16 +2,16 @@
 
 // builtin
 #include <array>
+#include <assert.h>
 #include <cstdint>
 #include <list>
 #include <memory>
 #include <sys/types.h>
-#include <assert.h>
 
 // local
-#include "../utils/vector.hpp"
 #include "../managers/construction_manager.hpp"
 #include "../managers/unit_manager.hpp"
+#include "../utils/vector.hpp"
 
 
 
