@@ -23,7 +23,6 @@ class MapTile
 public:
 
     // Pathfinding
-    std::array<MapTile*, 8> neighbors{};
     MapTile* parent = nullptr;
     int32_t set_id = 0;
     int32_t movement_cost = 0;
@@ -45,7 +44,7 @@ public:
 
     bool update_set();
     void reset_pathfinding();
-    void setup_pathfinding(boar::IndexVector2 const target, MapTile* parent, const int parent_dir_index);
+    void setup_pathfinding(MapTile* parent, boar::IndexVector2 const target);
 };
 
 typedef std::vector<boar::IndexVector2> Path;
@@ -71,11 +70,8 @@ public:
     constexpr static size_t DIR_COUNT = 8;
     constexpr static int32_t LINEAR_DIST = 10;
     constexpr static int32_t DIAGONAL_DIST = 14;
-    constexpr static std::array<int32_t, DIR_COUNT> MOVEMENT_COST{
-        DIAGONAL_DIST, LINEAR_DIST, DIAGONAL_DIST, LINEAR_DIST, LINEAR_DIST, DIAGONAL_DIST, LINEAR_DIST, DIAGONAL_DIST};
 
     InputMode current_input_mode;
-    bool queued_set_update = false;
 
 private:
 
@@ -83,9 +79,7 @@ private:
 
 private:
 
-    void set_tile_neighbors(MapTile* tile);
     Path construct_path(boar::IndexVector2 const start_index, const MapTile* const target_tile);
-    void update_tile_sets();
     void reset_pathfinding();
 
 public:
@@ -94,10 +88,9 @@ public:
 
 public:
 
-    int32_t get_movement_cost(boar::IndexVector2 const) const;
+    static int32_t get_distance_cost(boar::IndexVector2 const dir);
     Path get_path(boar::IndexVector2 const origin, boar::IndexVector2 const target);
     MapTile* get_tile(boar::IndexVector2 const);
-    void check_update_set();
     void update();
     void render() const;
 
@@ -134,7 +127,6 @@ public:
                 this->map[x][z].empty = false;
             }
         }
-        // this->queued_set_update = true;
     }
 
     template <class VectorT>

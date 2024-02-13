@@ -104,7 +104,7 @@ void Worker::update_movement(const float delta)
     assert(dir.x <= 1);
     assert(dir.z <= 1);
 
-    const float movement_cost = game_world.get_movement_cost(dir);
+    const float movement_cost = game_world.get_distance_cost(dir);
 
     this->step_progress += delta * Worker::MOVE_SPEED / movement_cost;
     if (this->step_progress > 1)
