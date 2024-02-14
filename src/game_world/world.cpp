@@ -3,6 +3,7 @@
 
 // builtin
 #include <list>
+#include <queue>
 
 // extern
 #include "raylib.h"
@@ -64,23 +65,6 @@ void World::reset_pathfinding()
     }
 }
 
-auto World::get_minimum_cost_tile(std::list<MapTile*>& open_list)
-{
-    auto current_tile_it = open_list.begin();
-    int32_t current_tile_cost = (*current_tile_it)->total_cost;
-
-    const auto list_end = open_list.end();
-    for (auto tile = open_list.begin(); tile != list_end; tile++)
-    {
-        if ((*current_tile_it)->total_cost < current_tile_cost)
-        {
-            current_tile_it = tile;
-        }
-    }
-
-    return current_tile_it;
-}
-
 World::World()
 {
     TimeMeasurer world_start{"world"};
@@ -103,7 +87,7 @@ World::World()
 Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target)
 {
     this->reset_pathfinding();
-    std::list<MapTile*> open{};
+    std::priority_queue<MapTile*> open{};
 
     // std::cout << origin << target;
 
@@ -115,14 +99,13 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
 
 
     origin_tile->setup_pathfinding(nullptr, target);
-    open.push_back(origin_tile);
+    open.push(origin_tile);
 
     while (!open.empty())
     {
-        auto current_tile_it = World::get_minimum_cost_tile(open);
-        auto current_tile = *current_tile_it;
+        auto current_tile = open.top();
+        open.pop();
 
-        open.erase(current_tile_it);
         current_tile->visited = true;
 
         if (current_tile->index == target)
@@ -146,7 +129,7 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
                 if (!neighbor.pathfinding_started)
                 {
                     neighbor.setup_pathfinding(current_tile, target);
-                    open.push_back(&neighbor);
+                    open.push(&neighbor);
                 }
                 else
                 {

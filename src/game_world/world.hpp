@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 #include <sys/types.h>
+#include <queue>
 
 // local
 #include "../managers/construction_manager.hpp"
@@ -46,6 +47,16 @@ public:
     void reset_pathfinding();
     void setup_pathfinding(MapTile* parent, boar::IndexVector2 const target);
 };
+
+template <>
+struct std::less<MapTile*>
+{
+    bool operator()(MapTile* const& a, MapTile* const& b)
+    {
+        return a->total_cost > b->total_cost;
+    }
+};
+
 
 typedef std::vector<boar::IndexVector2> Path;
 
@@ -155,8 +166,6 @@ public:
 
 private:
 
-    // TODO: replace auto with explicit type
-    static auto get_minimum_cost_tile(std::list<MapTile*>& tile_list);
 };
 
 inline World game_world;
