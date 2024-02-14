@@ -4,6 +4,8 @@
 // builtin
 #include <list>
 #include <queue>
+#include <vector>
+
 
 // extern
 #include "raylib.h"
@@ -54,16 +56,6 @@ Path World::construct_path(boar::IndexVector2 const start_index, const MapTile* 
     return path;
 }
 
-void World::reset_pathfinding()
-{
-    for (auto& row: this->map)
-    {
-        for (auto& tile: row)
-        {
-            tile.reset_pathfinding();
-        }
-    }
-}
 
 World::World()
 {
@@ -86,20 +78,23 @@ World::World()
 
 Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target)
 {
-    this->reset_pathfinding();
     std::priority_queue<MapTile*> open{};
+    std::vector<MapTile*> used_tiles;
 
-    // std::cout << origin << target;
+    auto reset_used_tiles = [&used_tiles]() {
+        for (auto tile : used_tiles)
+            tile->reset_pathfinding();
+    };
+
+    auto push_tile = [&open, &used_tiles](MapTile* tile) {
+        open.push(tile);
+        used_tiles.push_back(tile);
+    };
 
     MapTile* origin_tile = this->get_tile(origin);
-    // std::cout << origin_tile->set_id << "->" << target_tile->set_id << "\n";
-
-    // if (origin_tile->set_id != target_tile->set_id)
-    //     return Path{};
-
 
     origin_tile->setup_pathfinding(nullptr, target);
-    open.push(origin_tile);
+    push_tile(origin_tile);
 
     while (!open.empty())
     {
@@ -109,7 +104,11 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
         current_tile->visited = true;
 
         if (current_tile->index == target)
-            return World::construct_path(origin, current_tile);
+        {
+            auto path = World::construct_path(origin, current_tile);
+            reset_used_tiles();
+            return path;
+        }
 
         for (int32_t x = -1; x < 2; x++)
         {
@@ -129,7 +128,7 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
                 if (!neighbor.pathfinding_started)
                 {
                     neighbor.setup_pathfinding(current_tile, target);
-                    open.push(&neighbor);
+                    push_tile(&neighbor);
                 }
                 else
                 {
@@ -142,6 +141,7 @@ Path World::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 t
         }
     }
 
+    reset_used_tiles();
     return Path{};
 }
 

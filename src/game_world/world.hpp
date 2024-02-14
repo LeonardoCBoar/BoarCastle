@@ -91,7 +91,6 @@ private:
 private:
 
     Path construct_path(boar::IndexVector2 const start_index, const MapTile* const target_tile);
-    void reset_pathfinding();
 
 public:
 
