@@ -19,7 +19,9 @@ add_executable(BoarCastle
     src/main.cpp
     src/managers/camera.cpp
     src/managers/construction_manager.cpp
+    src/managers/collision_manager.cpp
     src/managers/unit_manager.cpp
+    src/managers/pathfinder.cpp
     src/game_world/game_objects/wall.cpp
     src/game_world/game_objects/worker.cpp
     src/game_world/world.cpp

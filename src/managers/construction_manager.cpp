@@ -19,7 +19,8 @@
 #include "../game_world/game_objects/wall.hpp"
 #include "../game_world/game_objects/worker.hpp"
 #include "../game_world/world.hpp"
-#include "../managers/unit_manager.hpp"
+#include "unit_manager.hpp"
+#include "collision_manager.hpp"
 
 
 
@@ -82,7 +83,7 @@ void ConstructionManager::handle_input(const InputData& input_data)
 
     const auto selected_tile = input_data.mouse_index;
 
-    if (!game_world.is_inside_borders(selected_tile))
+    if (!game_world.collision_manager->is_inside_borders(selected_tile))
     {
         this->preview_wall->visible = false;
         return;
@@ -92,7 +93,7 @@ void ConstructionManager::handle_input(const InputData& input_data)
     this->preview_wall->move_to(selected_tile);
 
 
-    bool free_space = game_world.can_fit_object(preview_wall);
+    bool free_space = game_world.collision_manager->can_fit_object(preview_wall);
 
 
     if (free_space)
@@ -108,7 +109,7 @@ void ConstructionManager::handle_input(const InputData& input_data)
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && free_space)
     {
-        game_world.add_object_collision(this->preview_wall);
+        game_world.collision_manager->add_object_collision(this->preview_wall);
         this->construction_queue[this->order_id++] = {0, this->preview_wall};
         this->create_preview_wall(selected_tile);
     }
@@ -126,7 +127,7 @@ void ConstructionManager::render() const
 
         for (const auto& spot: interaction_spots)
         {
-            if (game_world.is_inside_borders(spot) && game_world.is_tile_empty(spot))
+            if (game_world.collision_manager->is_inside_borders(spot) && game_world.collision_manager->is_tile_empty(spot))
             {
                 DrawCube({(float)spot.x + 0.5f, 0, (float)spot.z + 0.5f}, 1, 0.1, 1, YELLOW);
             }

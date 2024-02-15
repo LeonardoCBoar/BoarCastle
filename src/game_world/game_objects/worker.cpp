@@ -15,6 +15,8 @@
 #include "../../utils/utils.hpp"
 #include "../world.hpp"
 #include "wall.hpp"
+#include "../../managers/pathfinder.hpp"
+#include "../../managers/collision_manager.hpp"
 
 Worker::Worker(boar::IndexVector2 const pos):
     index{pos}, step_target{pos}, target{pos}, render_pos{(float)pos.x, 0.5f, (float)pos.z}
@@ -32,11 +34,11 @@ bool Worker::move_to(boar::IndexVector2 const target)
     Path new_path;
     if (current_state == Worker::MOVING)
     {
-        new_path = game_world.get_path(this->step_target, target);
+        new_path = game_world.pathfinder->get_path(this->step_target, target);
     }
     else
     {
-        new_path = game_world.get_path(this->index, target);
+        new_path = game_world.pathfinder->get_path(this->index, target);
     }
 
 
@@ -76,7 +78,7 @@ bool Worker::try_move_next_tile()
     // TODO: Worker cannot recover if there's no path to the target when he's in the middle of it
 
     this->step_target = this->pop_next_movement();
-    if (game_world.is_tile_empty(this->step_target))
+    if (game_world.collision_manager->is_tile_empty(this->step_target))
         return true;
 
     do
@@ -88,9 +90,9 @@ bool Worker::try_move_next_tile()
         else
             return false;
 
-    } while (!game_world.is_tile_empty(this->step_target)); // TODO: There's a crash here
+    } while (!game_world.collision_manager->is_tile_empty(this->step_target)); // TODO: There's a crash here
 
-    auto outline_path = game_world.get_path(this->index, this->step_target);
+    auto outline_path = game_world.pathfinder->get_path(this->index, this->step_target);
     this->path.insert(this->path.end(), outline_path.begin(), outline_path.end());
     this->step_target = this->pop_next_movement();
 
@@ -104,7 +106,7 @@ void Worker::update_movement(const float delta)
     assert(dir.x <= 1);
     assert(dir.z <= 1);
 
-    const float movement_cost = game_world.get_distance_cost(dir);
+    const float movement_cost = Pathfinder::get_distance_cost(dir);
 
     this->step_progress += delta * Worker::MOVE_SPEED / movement_cost;
     if (this->step_progress > 1)
@@ -147,7 +149,7 @@ void Worker::update(const float delta)
                 bool can_build_range = false;
                 for (const auto& spot: interaction_spots)
                 {
-                    if (!game_world.is_inside_borders(spot))
+                    if (!game_world.collision_manager->is_inside_borders(spot))
                         continue;
 
                     if (this->index == spot)
@@ -166,7 +168,7 @@ void Worker::update(const float delta)
                     bool found_path;
                     for (const auto& spot: interaction_spots)
                     {
-                        if (!game_world.is_inside_borders(spot) || !game_world.is_tile_empty(spot))
+                        if (!game_world.collision_manager->is_inside_borders(spot) || !game_world.collision_manager->is_tile_empty(spot))
                             continue;
 
                         found_path = this->move_to(spot);
