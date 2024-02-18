@@ -29,7 +29,7 @@ void PathfindingTile::setup_pathfinding(PathfindingTile* parent, boar::IndexVect
     else
         this->movement_cost = 0;
 
-    this->distance_cost = this->map_tile->index.manhattan_distance(target);
+    this->distance_cost = this->map_tile->index.squared_euclidian_distance(target);
     this->total_cost = this->distance_cost + this->movement_cost;
     this->pathfinding_started = true;
 }
@@ -135,7 +135,7 @@ Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVect
                 else
                 {
                     const int32_t other_cost =
-                        current_tile->movement_cost + Pathfinder::get_distance_cost(neighbor_index - current_tile->map_tile->index) + neighbor.map_tile->index.manhattan_distance(target);
+                        current_tile->movement_cost + Pathfinder::get_distance_cost(neighbor_index - current_tile->map_tile->index) + neighbor.map_tile->index.squared_euclidian_distance(target);
                     if (other_cost < neighbor.total_cost)
                         neighbor.setup_pathfinding(current_tile, target);
                 }

@@ -67,6 +67,12 @@ namespace boar
             return abs(static_cast<int16_t>(this->x) - static_cast<int16_t>(other.x)) +
                    abs(static_cast<int16_t>(this->z) - static_cast<int16_t>(other.z));
         }
+
+        inline int32_t squared_euclidian_distance(const CustomVector2<NumberT> other) const
+        {
+            const CustomVector2<NumberT> vector_dist = (*this) - other;
+            return vector_dist.x * vector_dist.x + vector_dist.z + vector_dist.z;
+        }
     };
 
     template <class NumberT>
