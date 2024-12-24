@@ -19,7 +19,7 @@
 #include "wall.hpp"
 
 Worker::Worker(boar::IndexVector2 const pos):
-    index{pos}, step_target{pos}, target{pos}, render_pos{(float)pos.x, 0.5f, (float)pos.z}
+    index{pos}, step_target{pos}, target{pos}, render_pos{static_cast<float>(pos.x), 0.5f, static_cast<float>(pos.z)}
 {
     game_world.get_tile(this->index)->empty = false;
 }

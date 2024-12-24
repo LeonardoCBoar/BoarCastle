@@ -3,6 +3,7 @@
 
 // local
 #include "../utils/vector.hpp"
+#include <cassert>
 
 
 
@@ -71,6 +72,8 @@ void HoverCamera::hover_camera(const Direction dir_index, const double delta_t)
             movement_dir.x = -current_dir.z;
             movement_dir.z = current_dir.x;
             break;
+        default:
+            assert(false);
     }
 
     this->position = this->position + movement_dir * delta_t * HOVER_SPEED;

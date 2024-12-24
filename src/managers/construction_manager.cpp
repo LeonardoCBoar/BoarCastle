@@ -72,6 +72,8 @@ void ConstructionManager::update(const InputData& input_data)
                 order.construction->color.a = MAX_CONSTRUCTION_TRANSPARENCY;
                 this->construction_queue.erase(index);
                 break;
+            default:
+                assert(false);
         }
     }
 }
@@ -130,7 +132,7 @@ void ConstructionManager::render() const
             if (game_world.collision_manager->is_inside_borders(spot) &&
                 game_world.collision_manager->is_tile_empty(spot))
             {
-                DrawCube({(float)spot.x + 0.5f, 0, (float)spot.z + 0.5f}, 1, 0.1, 1, YELLOW);
+                DrawCube({spot.x + 0.5f, 0, spot.z + 0.5f}, 1, 0.1, 1, YELLOW);
             }
         }
     }
