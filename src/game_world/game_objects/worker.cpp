@@ -11,12 +11,12 @@
 #include <raylib.h>
 
 // local
+#include "../../managers/collision_manager.hpp"
 #include "../../managers/construction_manager.hpp"
+#include "../../managers/pathfinder.hpp"
 #include "../../utils/utils.hpp"
 #include "../world.hpp"
 #include "wall.hpp"
-#include "../../managers/pathfinder.hpp"
-#include "../../managers/collision_manager.hpp"
 
 Worker::Worker(boar::IndexVector2 const pos):
     index{pos}, step_target{pos}, target{pos}, render_pos{(float)pos.x, 0.5f, (float)pos.z}
@@ -49,7 +49,7 @@ bool Worker::move_to(boar::IndexVector2 const target)
 
     this->path = new_path;
     this->target = target;
-    if(this->current_state != Worker::MOVING)
+    if (this->current_state != Worker::MOVING)
     {
         this->step_target = this->pop_next_movement();
         current_state = Worker::MOVING;
@@ -171,7 +171,8 @@ void Worker::update(const float delta)
                     bool found_path;
                     for (const auto& spot: interaction_spots)
                     {
-                        if (!game_world.collision_manager->is_inside_borders(spot) || !game_world.collision_manager->is_tile_empty(spot))
+                        if (!game_world.collision_manager->is_inside_borders(spot) ||
+                            !game_world.collision_manager->is_tile_empty(spot))
                             continue;
 
                         found_path = this->move_to(spot);

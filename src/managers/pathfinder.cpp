@@ -25,7 +25,8 @@ void PathfindingTile::setup_pathfinding(PathfindingTile* parent, boar::IndexVect
 {
     this->parent = parent;
     if (this->parent != nullptr)
-        this->movement_cost = parent->movement_cost + Pathfinder::get_distance_cost(this->map_tile->index - parent->map_tile->index);
+        this->movement_cost =
+            parent->movement_cost + Pathfinder::get_distance_cost(this->map_tile->index - parent->map_tile->index);
     else
         this->movement_cost = 0;
 
@@ -40,14 +41,13 @@ void PathfindingTile::setup_pathfinding(PathfindingTile* parent, boar::IndexVect
 /*                                 Pathfinder                                 */
 /* -------------------------------------------------------------------------- */
 
-Pathfinder::Pathfinder(const boar::IndexVector2 map_size)
-    : map_size(map_size)
+Pathfinder::Pathfinder(const boar::IndexVector2 map_size): map_size(map_size)
 {
     this->map.resize(map_size.x);
-    for(int32_t x = 0; x < map_size.x; x++)
+    for (int32_t x = 0; x < map_size.x; x++)
     {
         this->map[x].resize(map_size.z);
-        for(int32_t z = 0; z < map_size.z; z++)
+        for (int32_t z = 0; z < map_size.z; z++)
         {
             this->map[x][z].map_tile = game_world.get_tile({x, z});
         }
@@ -83,12 +83,14 @@ Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVect
     std::priority_queue<PathfindingTile*> open{};
     std::vector<PathfindingTile*> used_tiles;
 
-    auto reset_used_tiles = [&used_tiles]() {
-        for (auto tile : used_tiles)
+    auto reset_used_tiles = [&used_tiles]()
+    {
+        for (auto tile: used_tiles)
             tile->reset_pathfinding();
     };
 
-    auto push_tile = [&open, &used_tiles](PathfindingTile* tile) {
+    auto push_tile = [&open, &used_tiles](PathfindingTile* tile)
+    {
         open.push(tile);
         used_tiles.push_back(tile);
     };
@@ -118,15 +120,16 @@ Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVect
             {
                 const boar::IndexVector2 neighbor_index = current_tile->map_tile->index + boar::IndexVector2{x, z};
 
-                if (neighbor_index == current_tile->map_tile->index || !game_world.collision_manager->is_inside_borders(neighbor_index))
+                if (neighbor_index == current_tile->map_tile->index ||
+                    !game_world.collision_manager->is_inside_borders(neighbor_index))
                     continue;
 
                 PathfindingTile& neighbor = this->map[neighbor_index.x][neighbor_index.z];
-                
-                if(!neighbor.map_tile->empty)
+
+                if (!neighbor.map_tile->empty)
                     continue;
 
-                
+
                 if (!neighbor.pathfinding_started)
                 {
                     neighbor.setup_pathfinding(current_tile, target);
@@ -135,7 +138,9 @@ Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVect
                 else
                 {
                     const int32_t other_cost =
-                        current_tile->movement_cost + Pathfinder::get_distance_cost(neighbor_index - current_tile->map_tile->index) + neighbor.map_tile->index.squared_euclidian_distance(target);
+                        current_tile->movement_cost +
+                        Pathfinder::get_distance_cost(neighbor_index - current_tile->map_tile->index) +
+                        neighbor.map_tile->index.squared_euclidian_distance(target);
                     if (other_cost < neighbor.total_cost)
                         neighbor.setup_pathfinding(current_tile, target);
                 }

@@ -11,10 +11,10 @@
 #include "raylib.h"
 
 // local
+#include "../managers/collision_manager.hpp"
+#include "../managers/pathfinder.hpp"
 #include "../utils/utils.hpp"
 #include "game_objects/wall.hpp"
-#include "../managers/pathfinder.hpp"
-#include "../managers/collision_manager.hpp"
 
 
 MapTile::MapTile() = default;

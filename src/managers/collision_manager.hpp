@@ -1,25 +1,21 @@
 #pragma once
 
 // builtin
-#include <memory>
 #include <cassert>
+#include <memory>
 
 // local
 #include "../game_world/world.hpp"
 
 class CollisionManager
 {
-
 private:
+
     std::array<std::array<MapTile, World::SIZE.z>, World::SIZE.x>& map;
 
 public:
 
-    CollisionManager(std::array<std::array<MapTile, World::SIZE.z>, World::SIZE.x>& map)
-        : map{map}
-        {
-
-        }
+    CollisionManager(std::array<std::array<MapTile, World::SIZE.z>, World::SIZE.x>& map): map{map} {}
 
     template <class GameObject>
     bool can_fit_object(const std::shared_ptr<GameObject> game_object) const

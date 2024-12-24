@@ -5,20 +5,16 @@
 
 
 
-
-struct CollisionData {
+struct CollisionData
+{
     boar::IndexVector3 size;
     boar::IndexVector3 half_size;
 
-    constexpr CollisionData(const boar::IndexVector3 size)
-        : size{size}, half_size{size/2}
-        {
-
-        }
+    constexpr CollisionData(const boar::IndexVector3 size): size{size}, half_size{size / 2} {}
 };
 
-struct Transform {
-
+struct Transform
+{
     boar::IndexVector3 size;
     boar::IndexVector2 index;
     boar::IndexVector3 position;

@@ -4,8 +4,8 @@
 
 // local
 #include "game_world/world.hpp"
-#include "handlers/time_handler.hpp"
 #include "handlers/input_handler.hpp"
+#include "handlers/time_handler.hpp"
 #include "managers/camera.hpp"
 #include "managers/construction_manager.hpp"
 #include "managers/pod/input_data.hpp"

@@ -6,15 +6,14 @@
 #include <cstdint>
 #include <list>
 #include <memory>
-#include <sys/types.h>
 #include <queue>
+#include <sys/types.h>
 
 // local
 #include "../managers/construction_manager.hpp"
-#include "../managers/unit_manager.hpp"
 #include "../managers/pathfinder.hpp"
+#include "../managers/unit_manager.hpp"
 #include "../utils/vector.hpp"
-
 
 
 
@@ -26,6 +25,7 @@ class Pathfinder;
 class MapTile
 {
 public:
+
     bool empty = true;
     boar::IndexVector2 index;
 
@@ -76,7 +76,6 @@ public:
 
 
 private:
-
 };
 
 inline World game_world;

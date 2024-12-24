@@ -12,7 +12,7 @@
 #include "../game_world/world.hpp"
 #include "../utils/utils.hpp"
 #include "collision_manager.hpp"
-#include  "pathfinder.hpp"
+#include "pathfinder.hpp"
 
 
 UnitManager::UnitManager()

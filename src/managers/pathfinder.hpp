@@ -14,7 +14,7 @@ class MapTile;
 class PathfindingTile
 {
 public:
-    
+
     PathfindingTile* parent = nullptr;
     int32_t set_id = 0;
     int32_t movement_cost = 0;
@@ -29,7 +29,7 @@ public:
     MapTile* map_tile;
 
 public:
-    
+
     void reset_pathfinding();
     void setup_pathfinding(PathfindingTile* parent, boar::IndexVector2 const target);
 };
@@ -50,16 +50,17 @@ using Path = std::vector<boar::IndexVector2>;
 class Pathfinder
 {
 private:
+
     constexpr static int32_t LINEAR_DIST = 10;
     constexpr static int32_t DIAGONAL_DIST = 14;
-    
+
     const boar::IndexVector2 map_size;
-    
+
     // TODO: Maybe it's not necessary to have one Pathfinding tile for each MapTile
     std::vector<std::vector<PathfindingTile>> map;
 
 public:
-    
+
     Pathfinder(const boar::IndexVector2 map_size);
     Path get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target);
     static int32_t get_distance_cost(const boar::IndexVector2 dir);
@@ -68,4 +69,3 @@ private:
 
     static Path construct_path(const boar::IndexVector2 start_index, const PathfindingTile* const target_tile);
 };
-

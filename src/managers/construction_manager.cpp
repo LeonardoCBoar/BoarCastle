@@ -19,8 +19,8 @@
 #include "../game_world/game_objects/wall.hpp"
 #include "../game_world/game_objects/worker.hpp"
 #include "../game_world/world.hpp"
-#include "unit_manager.hpp"
 #include "collision_manager.hpp"
+#include "unit_manager.hpp"
 
 
 
@@ -127,7 +127,8 @@ void ConstructionManager::render() const
 
         for (const auto& spot: interaction_spots)
         {
-            if (game_world.collision_manager->is_inside_borders(spot) && game_world.collision_manager->is_tile_empty(spot))
+            if (game_world.collision_manager->is_inside_borders(spot) &&
+                game_world.collision_manager->is_tile_empty(spot))
             {
                 DrawCube({(float)spot.x + 0.5f, 0, (float)spot.z + 0.5f}, 1, 0.1, 1, YELLOW);
             }

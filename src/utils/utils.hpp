@@ -41,8 +41,7 @@ public:
 
 public:
 
-    [[nodiscard]]
-    auto get_time() const
+    [[nodiscard]] auto get_time() const
     {
         const auto current_time = std::chrono::high_resolution_clock::now();
         const auto elapsed_time = current_time - this->start_time;
@@ -64,8 +63,7 @@ public:
         this->start_time = std::chrono::high_resolution_clock::now();
     }
 
-    [[nodiscard]]
-    auto get_decimal_time() const
+    [[nodiscard]] auto get_decimal_time() const
     {
         const auto current_time = std::chrono::high_resolution_clock::now();
         const auto elapsed_time = current_time - this->start_time;
