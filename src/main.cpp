@@ -4,6 +4,8 @@
 
 // local
 #include "game_world/world.hpp"
+#include "handlers/time_handler.hpp"
+#include "handlers/input_handler.hpp"
 #include "managers/camera.hpp"
 #include "managers/construction_manager.hpp"
 #include "managers/pod/input_data.hpp"
@@ -24,13 +26,17 @@ int main(void)
     SetTargetFPS(60);
     UpdateCamera(&camera, CAMERA_FREE);
 
+    TimeHandler time_handler;
+    InputHandler input_handler(&camera);
+
     while (!WindowShouldClose())
     {
-        const float delta_t = GetFrameTime();
-        InputData input_data;
+        InputData input_data = input_handler.get_input();
+        time_handler.update(input_data);
+        const float delta_t = time_handler.get_frame_time();
+        const float raw_delta_t = time_handler.get_frame_time(false);
 
-        camera.update(delta_t);
-        input_data.mouse_index = camera.current_mouse_index;
+        camera.update(raw_delta_t);
         game_world.update();
 
         game_world.construction_manager->update(input_data);
