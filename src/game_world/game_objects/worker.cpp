@@ -112,7 +112,7 @@ void Worker::update_movement(const float delta)
     const float movement_cost = Pathfinder::get_distance_cost(dir);
 
     this->step_progress += delta * Worker::MOVE_SPEED / movement_cost;
-    if (this->step_progress > 1)
+    while(this->step_progress > 1)
     {
         // TODO: step target must be reserved at the begining of the movement
         game_world.get_tile(this->index)->empty = true;
@@ -135,6 +135,7 @@ void Worker::update_movement(const float delta)
         }
     }
 
+    // const double normalized_step = step_progress > 1 ? 1 : this->step_progress;
     this->render_pos = boar::Vector3f{this->index.x + 0.5f + (dir.x * step_progress), 0.5f,
                                       this->index.z + 0.5f + (dir.z * step_progress)};
 }
