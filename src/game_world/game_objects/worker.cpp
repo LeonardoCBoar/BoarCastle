@@ -47,10 +47,13 @@ bool Worker::move_to(boar::IndexVector2 const target)
     if (new_path.empty())
         return false;
 
-    current_state = Worker::MOVING;
     this->path = new_path;
     this->target = target;
-    this->step_target = this->pop_next_movement();
+    if(this->current_state != Worker::MOVING)
+    {
+        this->step_target = this->pop_next_movement();
+        current_state = Worker::MOVING;
+    }
     return true;
 }
 
