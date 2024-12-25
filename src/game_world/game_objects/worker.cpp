@@ -17,9 +17,10 @@
 #include "../../utils/utils.hpp"
 #include "../world.hpp"
 #include "wall.hpp"
+#include "../../properties/colors.hpp"
 
-Worker::Worker(boar::IndexVector2 const pos):
-    index{pos}, step_target{pos}, target{pos}, render_pos{static_cast<float>(pos.x), 0.5f, static_cast<float>(pos.z)}
+Worker::Worker(boar::IndexVector2 const pos, const uint64_t id):
+    id{id}, index{pos}, step_target{pos}, target{pos}, render_pos{static_cast<float>(pos.x), 0.5f, static_cast<float>(pos.z)}
 {
     game_world.get_tile(this->index)->empty = false;
 }
@@ -209,5 +210,11 @@ void Worker::update(const float delta)
 
 void Worker::render() const
 {
-    DrawSphere(render_pos, 0.5, this->color);
+    Color color;
+    if(this->selected)
+        color = property::color.SELECTED_WORKER_COLOR;
+    else
+        color = property::color.WORKER_COLOR;
+
+    DrawSphere(render_pos, 0.5, color);
 }

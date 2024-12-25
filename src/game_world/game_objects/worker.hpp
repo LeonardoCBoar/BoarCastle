@@ -6,9 +6,6 @@
 #include <optional>
 #include <vector>
 
-// extern
-#include <raylib.h>
-
 // local
 #include "../../managers/pod/construction_order.hpp"
 #include "../../utils/vector.hpp"
@@ -28,7 +25,7 @@ class Worker
 
 public:
 
-    Color color = RED;
+    uint64_t id;
 
     boar::IndexVector2 index{};
     boar::IndexVector2 step_target;
@@ -37,6 +34,7 @@ public:
 
     WorkerState current_state = IDLE;
     ConstructionOrder* target_construction = NULL;
+    bool selected = false;
 
 private:
 
@@ -47,7 +45,7 @@ private:
 
 public:
 
-    Worker(boar::IndexVector2 const pos);
+    Worker(boar::IndexVector2 const pos, const uint64_t id);
 
 public:
 

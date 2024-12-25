@@ -4,6 +4,7 @@
 // builtin
 #include <cstdint>
 #include <iostream>
+#include <algorithm>
 
 // extern
 #include "raylib.h"
@@ -17,7 +18,7 @@
 
 UnitManager::UnitManager()
 {
-    this->workers.emplace_back(boar::IndexVector2{20, 20});
+    this->workers.emplace_back(boar::IndexVector2{20, 20}, this->next_worker_id++);
 }
 
 void UnitManager::update(const float delta, const InputData& input_data)
@@ -31,11 +32,36 @@ void UnitManager::update(const float delta, const InputData& input_data)
         return;
 
     const bool mouse_inside_borders = game_world.collision_manager->is_inside_borders(input_data.mouse_index);
+    if(!mouse_inside_borders)
+        return;
 
-    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && mouse_inside_borders)
+    if (input_data.map_input == MapInput::LEFT_CLICK)
     {
-        this->workers[0].move_to(input_data.mouse_index);
+        if(input_data.shift_down)
+        {
+            if(game_world.collision_manager->is_tile_empty(input_data.mouse_index))
+                this->workers.emplace_back(input_data.mouse_index, this->next_worker_id++);
+        }
+        else
+        {
+            auto is_worker_under_mouse = [input_data](const auto& worker)
+            {
+                return worker.index == input_data.mouse_index;
+            };
+            auto clicked_worker = std::find_if(this->workers.begin(), this->workers.end(), is_worker_under_mouse);
+            if(clicked_worker != this->workers.end())
+            {
+                if(this->selected_worker_id.has_value())
+                    this->get_selected_worker()->selected = false;
+
+                clicked_worker->selected = true;
+                this->selected_worker_id = clicked_worker->id;
+            }
+        }
     }
+    else if(input_data.map_input == MapInput::RIGHT_CLICK && this->selected_worker_id.has_value())
+        this->get_selected_worker()->move_to(input_data.mouse_index);
+    
 
     // TODO: Remove pathfinder benchmark from here
     if (IsKeyDown('T'))
@@ -61,17 +87,30 @@ void UnitManager::update(const float delta, const InputData& input_data)
 
 void UnitManager::render() const
 {
-    for (const auto& tile: this->workers[0].path)
+    if(this->selected_worker_id.has_value())
     {
-        Vector3 pos{};
-        pos.x = tile.x + 0.5;
-        pos.y = 0;
-        pos.z = tile.z + 0.5;
-        DrawCube(pos, 1, 0.1, 1, GREEN);
+        for (const auto& tile: this->get_selected_worker()->path)
+        {
+            Vector3 pos{};
+            pos.x = tile.x + 0.5;
+            pos.y = 0;
+            pos.z = tile.z + 0.5;
+            DrawCube(pos, 1, 0.1, 1, GREEN);
+        }
     }
 
     for (const Worker& worker: this->workers)
     {
         worker.render();
     }
+}
+
+Worker* UnitManager::get_selected_worker()
+{
+    return &this->workers[this->selected_worker_id.value()];
+}
+
+const Worker* UnitManager::get_selected_worker() const
+{
+    return &this->workers[this->selected_worker_id.value()];
 }
