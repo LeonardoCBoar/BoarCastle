@@ -5,7 +5,6 @@
 #include <assert.h>
 #include <cstdint>
 #include <iostream>
-#include <optional>
 
 // extern
 #include <raylib.h>
@@ -79,7 +78,9 @@ boar::IndexVector2 Worker::pop_next_movement()
 
 bool Worker::try_move_next_tile()
 {
-    // TODO: Worker cannot recover if there's no path to the target when he's in the middle of it
+    if(!game_world.collision_manager->is_tile_empty(this->target))
+        return false;
+
 
     this->step_target = this->pop_next_movement();
     if (game_world.collision_manager->is_tile_empty(this->step_target))
@@ -87,16 +88,19 @@ bool Worker::try_move_next_tile()
 
     do
     {
-        if (this->path.size() > 0)
+        if (!this->path.empty())
         {
             this->step_target = this->pop_next_movement();
         }
         else
             return false;
 
-    } while (!game_world.collision_manager->is_tile_empty(this->step_target)); // TODO: There's a crash here
+    } while (!game_world.collision_manager->is_tile_empty(this->step_target));
 
     auto outline_path = game_world.pathfinder->get_path(this->index, this->step_target);
+    if(outline_path.empty())
+        return false;
+
     this->path.insert(this->path.end(), outline_path.begin(), outline_path.end());
     this->step_target = this->pop_next_movement();
 
@@ -130,6 +134,9 @@ void Worker::update_movement(const float delta)
             const bool can_continue_moving = try_move_next_tile();
             if (!can_continue_moving)
             {
+                if(this->target_construction != nullptr)
+                    this->close_current_order(INACESSIBLE);
+                
                 this->current_state = IDLE;
                 this->step_progress = 0;
             }
