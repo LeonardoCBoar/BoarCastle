@@ -83,16 +83,16 @@ void ConstructionManager::handle_input(const InputData& input_data)
     if (game_world.current_input_mode != World::InputMode::CONSTRUCTION)
         return;
 
-    const auto selected_tile = input_data.mouse_index;
+    const auto mouse_index = input_data.mouse_input.index;
 
-    if (!game_world.collision_manager->is_inside_borders(selected_tile))
+    if (!game_world.collision_manager->is_inside_borders(mouse_index))
     {
         this->preview_wall->visible = false;
         return;
     }
 
     this->preview_wall->visible = true;
-    this->preview_wall->move_to(selected_tile);
+    this->preview_wall->move_to(mouse_index);
 
 
     bool free_space = game_world.collision_manager->can_fit_object(preview_wall);
@@ -113,7 +113,7 @@ void ConstructionManager::handle_input(const InputData& input_data)
     {
         game_world.collision_manager->add_object_collision(this->preview_wall);
         this->construction_queue[this->order_id++] = {0, this->preview_wall};
-        this->create_preview_wall(selected_tile);
+        this->create_preview_wall(mouse_index);
     }
 }
 

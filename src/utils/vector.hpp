@@ -10,6 +10,9 @@
 // extern
 #include <raylib.h>
 
+// local
+#include "rect.hpp"
+
 
 // TODO: tornar métodos constantes em [[nodiscard]]
 // TODO: remover "inlines" desnecessários
@@ -72,6 +75,12 @@ namespace boar
         {
             const CustomVector2<NumberT> vector_dist = (*this) - other;
             return vector_dist.x * vector_dist.x + vector_dist.z + vector_dist.z;
+        }
+
+        inline bool is_inside_rect(const Rect rect) const
+        {
+            return this->x >= rect.pos_x && this->x <= (rect.pos_x + rect.size_x) && this->z >= rect.pos_z &&
+                   this->z <= (rect.pos_z + rect.size_z);
         }
     };
 

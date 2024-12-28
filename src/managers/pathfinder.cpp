@@ -81,7 +81,7 @@ int32_t Pathfinder::get_distance_cost(boar::IndexVector2 const dir)
 Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target)
 {
     const PathfindingTile* const target_tile = &this->map[target.x][target.z];
-    if(!target_tile->map_tile->empty)
+    if (!target_tile->map_tile->empty)
         return {};
 
     std::priority_queue<PathfindingTile*> open{};

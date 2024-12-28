@@ -13,13 +13,14 @@
 #include "../../managers/collision_manager.hpp"
 #include "../../managers/construction_manager.hpp"
 #include "../../managers/pathfinder.hpp"
+#include "../../properties/colors.hpp"
 #include "../../utils/utils.hpp"
 #include "../world.hpp"
 #include "wall.hpp"
-#include "../../properties/colors.hpp"
 
 Worker::Worker(boar::IndexVector2 const pos, const uint64_t id):
-    id{id}, index{pos}, step_target{pos}, target{pos}, render_pos{static_cast<float>(pos.x), 0.5f, static_cast<float>(pos.z)}
+    id{id}, index{pos}, step_target{pos}, target{pos}, render_pos{static_cast<float>(pos.x), 0.5f,
+                                                                  static_cast<float>(pos.z)}
 {
     game_world.get_tile(this->index)->empty = false;
 }
@@ -78,7 +79,7 @@ boar::IndexVector2 Worker::pop_next_movement()
 
 bool Worker::try_move_next_tile()
 {
-    if(!game_world.collision_manager->is_tile_empty(this->target))
+    if (!game_world.collision_manager->is_tile_empty(this->target))
         return false;
 
 
@@ -98,7 +99,7 @@ bool Worker::try_move_next_tile()
     } while (!game_world.collision_manager->is_tile_empty(this->step_target));
 
     auto outline_path = game_world.pathfinder->get_path(this->index, this->step_target);
-    if(outline_path.empty())
+    if (outline_path.empty())
         return false;
 
     this->path.insert(this->path.end(), outline_path.begin(), outline_path.end());
@@ -117,7 +118,7 @@ void Worker::update_movement(const float delta)
     const float movement_cost = Pathfinder::get_distance_cost(dir);
 
     this->step_progress += delta * Worker::MOVE_SPEED / movement_cost;
-    while(this->step_progress > 1)
+    while (this->step_progress > 1)
     {
         // TODO: step target must be reserved at the begining of the movement
         game_world.get_tile(this->index)->empty = true;
@@ -134,9 +135,9 @@ void Worker::update_movement(const float delta)
             const bool can_continue_moving = try_move_next_tile();
             if (!can_continue_moving)
             {
-                if(this->target_construction != nullptr)
+                if (this->target_construction != nullptr)
                     this->close_current_order(INACESSIBLE);
-                
+
                 this->current_state = IDLE;
                 this->step_progress = 0;
             }
@@ -218,7 +219,7 @@ void Worker::update(const float delta)
 void Worker::render() const
 {
     Color color;
-    if(this->selected)
+    if (this->selected)
         color = property::color.SELECTED_WORKER_COLOR;
     else
         color = property::color.WORKER_COLOR;

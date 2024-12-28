@@ -2,15 +2,16 @@
 #include "unit_manager.hpp"
 
 // builtin
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
-#include <algorithm>
 
 // extern
 #include "raylib.h"
 
 // local
 #include "../game_world/world.hpp"
+#include "../properties/colors.hpp"
 #include "../utils/utils.hpp"
 #include "collision_manager.hpp"
 #include "pathfinder.hpp"
@@ -31,37 +32,7 @@ void UnitManager::update(const float delta, const InputData& input_data)
     if (game_world.current_input_mode != World::InputMode::COMMAND)
         return;
 
-    const bool mouse_inside_borders = game_world.collision_manager->is_inside_borders(input_data.mouse_index);
-    if(!mouse_inside_borders)
-        return;
-
-    if (input_data.map_input == MapInput::LEFT_CLICK)
-    {
-        if(input_data.shift_down)
-        {
-            if(game_world.collision_manager->is_tile_empty(input_data.mouse_index))
-                this->workers.emplace_back(input_data.mouse_index, this->next_worker_id++);
-        }
-        else
-        {
-            auto is_worker_under_mouse = [input_data](const auto& worker)
-            {
-                return worker.index == input_data.mouse_index;
-            };
-            auto clicked_worker = std::find_if(this->workers.begin(), this->workers.end(), is_worker_under_mouse);
-            if(clicked_worker != this->workers.end())
-            {
-                if(this->selected_worker_id.has_value())
-                    this->get_selected_worker()->selected = false;
-
-                clicked_worker->selected = true;
-                this->selected_worker_id = clicked_worker->id;
-            }
-        }
-    }
-    else if(input_data.map_input == MapInput::RIGHT_CLICK && this->selected_worker_id.has_value())
-        this->get_selected_worker()->move_to(input_data.mouse_index);
-    
+    this->handle_input(input_data);
 
     // TODO: Remove pathfinder benchmark from here
     if (IsKeyDown('T'))
@@ -76,7 +47,7 @@ void UnitManager::update(const float delta, const InputData& input_data)
                 boar::IndexVector2 target{x, z};
                 std::cout << target;
                 TimeMeasurer pathtimer{"Path found in"};
-                this->path = game_world.pathfinder->get_path(origin, target);
+                const auto path = game_world.pathfinder->get_path(origin, target);
                 total_time += pathtimer.get_time();
                 pathtimer.print_time();
             }
@@ -85,9 +56,71 @@ void UnitManager::update(const float delta, const InputData& input_data)
     }
 }
 
-void UnitManager::render() const
+void UnitManager::handle_input(const InputData& input_data)
 {
-    if(this->selected_worker_id.has_value())
+    const MouseInput mouse_input = input_data.mouse_input;
+    const auto mouse_index = mouse_input.index;
+
+    this->selection_rect = std::nullopt;
+
+    switch (mouse_input.type)
+    {
+        case MouseInputType::LEFT_CLICK:
+        {
+            auto is_worker_under_mouse = [mouse_index](const auto& worker) { return worker.index == mouse_index; };
+            auto clicked_worker = std::find_if(this->workers.begin(), this->workers.end(), is_worker_under_mouse);
+            if (clicked_worker != this->workers.end())
+            {
+                if (this->selected_worker_id.has_value())
+                    this->get_selected_worker()->selected = false;
+
+                clicked_worker->selected = true;
+                this->selected_worker_id = clicked_worker->id;
+            }
+            break;
+        }
+        case MouseInputType::SHIFT_LEFT_CLICK:
+        {
+            if (game_world.collision_manager->is_tile_empty(mouse_index))
+                this->workers.emplace_back(mouse_index, this->next_worker_id++);
+            break;
+        }
+        case MouseInputType::LEFT_CLICK_SELECTION:
+        {
+            this->selection_rect = std::make_optional<Rect>(
+                Rect::from_unoredered_points(mouse_input.selection_start_pos.x, mouse_input.selection_start_pos.z,
+                                             mouse_input.pos.x, mouse_input.pos.z));
+
+            const Rect selection_rect_index = Rect::from_unoredered_points(
+                mouse_input.selection_start_index.x, mouse_input.selection_start_index.z, mouse_index.x, mouse_index.z);
+
+            if (selection_rect_index.size_x > 0 || selection_rect_index.size_z > 0)
+            {
+                for (auto& worker: this->workers)
+                    worker.selected = worker.index.is_inside_rect(selection_rect_index);
+            }
+            break;
+        }
+        case MouseInputType::RIGHT_CLICK:
+        {
+            if (this->selected_worker_id.has_value())
+                this->get_selected_worker()->move_to(mouse_input.index);
+            break;
+        }
+        case MouseInputType::MI_NONE:
+        {
+            break;
+        }
+        default:
+        {
+            assert(false);
+        }
+    }
+}
+
+void UnitManager::render_3d() const
+{
+    if (this->selected_worker_id.has_value())
     {
         for (const auto& tile: this->get_selected_worker()->path)
         {
@@ -102,6 +135,15 @@ void UnitManager::render() const
     for (const Worker& worker: this->workers)
     {
         worker.render();
+    }
+}
+
+void UnitManager::render_2d() const
+{
+    if (this->selection_rect.has_value())
+    {
+        DrawRectangle(this->selection_rect->pos_x, this->selection_rect->pos_z, this->selection_rect->size_x,
+                      this->selection_rect->size_z, property::color.SELECTION_AREA_COLOR);
     }
 }
 

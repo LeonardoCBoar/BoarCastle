@@ -11,17 +11,27 @@ enum TimeInput
     INCREASE_SPEED
 };
 
-enum MapInput
+enum MouseInputType
 {
-    MP_NONE,
+    MI_NONE,
     LEFT_CLICK,
+    SHIFT_LEFT_CLICK,
+    LEFT_CLICK_SELECTION,
     RIGHT_CLICK,
 };
 
+struct MouseInput
+{
+    MouseInputType type;
+    boar::IndexVector2 pos;
+    boar::IndexVector2 index;
+    boar::IndexVector2 selection_start_index;
+    boar::IndexVector2 selection_start_pos;
+};
+
+
 struct InputData
 {
-    boar::IndexVector2 mouse_index;
     TimeInput time_input;
-    MapInput map_input;
-    bool shift_down;
+    MouseInput mouse_input;
 };

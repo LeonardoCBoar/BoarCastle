@@ -10,11 +10,13 @@
 #include "managers/construction_manager.hpp"
 #include "managers/pod/input_data.hpp"
 #include "managers/unit_manager.hpp"
+#include "utils/rect.hpp"
 
 
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
+const Rect SCREEN_RECT{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 std::string const WINDOW_NAME = "BoarCastle";
 
 int main(void)
@@ -27,11 +29,13 @@ int main(void)
     UpdateCamera(&camera, CAMERA_FREE);
 
     TimeHandler time_handler;
-    InputHandler input_handler(&camera);
+    InputHandler input_handler(SCREEN_RECT, &camera);
 
     while (!WindowShouldClose())
     {
+        input_handler.handle_input();
         InputData input_data = input_handler.get_input();
+
         time_handler.update(input_data);
         const float delta_t = time_handler.get_frame_time();
         const float raw_delta_t = time_handler.get_frame_time(false);
@@ -52,9 +56,11 @@ int main(void)
 
         game_world.render();
         game_world.construction_manager->render();
-        game_world.unit_manager->render();
+        game_world.unit_manager->render_3d();
 
         EndMode3D();
+
+        game_world.unit_manager->render_2d();
 
         DrawFPS(10, 10);
 

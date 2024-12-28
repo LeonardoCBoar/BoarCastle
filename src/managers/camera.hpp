@@ -45,13 +45,13 @@ public:
 
     HoverCamera(const boar::Vector3d position = {0, 0, 0});
 
-public:
-
     void update(const float delta_t);
+
+    boar::Vector3d get_ground_intersection_point(const Vector2 mouse_position) const;
+    boar::IndexVector2 grid_index_to_mouse_pos(const boar::IndexVector2 grid_index) const;
 
 private:
 
-    boar::Vector3d get_ground_intersection_point() const;
 
     void hover_camera(const Direction dir_index, const double delta_t);
     void rotate_camera(const double angle_delta, const double delta_t);

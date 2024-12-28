@@ -19,7 +19,7 @@ HoverCamera::HoverCamera(boar::Vector3d const position)
 
 void HoverCamera::update(const float delta_t)
 {
-    boar::Vector3d current_mouse_pos = this->get_ground_intersection_point();
+    boar::Vector3d current_mouse_pos = this->get_ground_intersection_point(GetMousePosition());
     this->current_mouse_index = current_mouse_pos.to_index2();
 
     if (IsKeyDown('W') || IsKeyDown(KEY_UP))
@@ -39,15 +39,22 @@ void HoverCamera::update(const float delta_t)
     this->lift_camera(-GetMouseWheelMove(), delta_t);
 }
 
-boar::Vector3d HoverCamera::get_ground_intersection_point() const
+boar::Vector3d HoverCamera::get_ground_intersection_point(const Vector2 mouse_position) const
 {
-    const Ray mouse_ray = GetMouseRay(GetMousePosition(), *this);
+    const Ray mouse_ray = GetMouseRay(mouse_position, *this);
 
     // Distance: Amount of dir vectors necessary to reach intersection point
     const double distance = (-mouse_ray.position.y) / mouse_ray.direction.y;
     boar::Vector3d const intersection_point = mouse_ray.position + mouse_ray.direction * distance;
 
     return intersection_point;
+}
+
+boar::IndexVector2 HoverCamera::grid_index_to_mouse_pos(const boar::IndexVector2 grid_index) const
+{
+    const Vector2 mouse_pos =
+        GetWorldToScreen({static_cast<float>(grid_index.x), 0, static_cast<float>(grid_index.z)}, *this);
+    return boar::IndexVector2{static_cast<int32_t>(mouse_pos.x), static_cast<int32_t>(mouse_pos.y)};
 }
 
 
