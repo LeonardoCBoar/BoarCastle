@@ -136,7 +136,7 @@ void Worker::update_movement(const float delta)
             if (!can_continue_moving)
             {
                 if (this->target_construction != nullptr)
-                    this->close_current_order(INACESSIBLE);
+                    this->close_current_order(NOT_ASSIGNED);
 
                 this->current_state = IDLE;
                 this->step_progress = 0;
@@ -144,7 +144,6 @@ void Worker::update_movement(const float delta)
         }
     }
 
-    // const double normalized_step = step_progress > 1 ? 1 : this->step_progress;
     this->render_pos = boar::Vector3f{this->index.x + 0.5f + (dir.x * step_progress), 0.5f,
                                       this->index.z + 0.5f + (dir.z * step_progress)};
 }

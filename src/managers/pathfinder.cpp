@@ -122,9 +122,10 @@ Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVect
         {
             for (int32_t z = -1; z < 2; z++)
             {
-                const boar::IndexVector2 neighbor_index = current_tile->map_tile->index + boar::IndexVector2{x, z};
+                const boar::IndexVector2 tile_index = current_tile->map_tile->index;
+                const boar::IndexVector2 neighbor_index = tile_index + boar::IndexVector2{x, z};
 
-                if (neighbor_index == current_tile->map_tile->index ||
+                if (neighbor_index == tile_index ||
                     !game_world.collision_manager->is_inside_borders(neighbor_index))
                     continue;
 
@@ -132,7 +133,14 @@ Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVect
 
                 if (!neighbor.map_tile->empty)
                     continue;
-
+                
+                if(x != 0 && z != 0)
+                {
+                    if(!this->map[tile_index.x + x][tile_index.z].map_tile->empty)
+                        continue;
+                    if(!this->map[tile_index.x][tile_index.z + z].map_tile->empty)
+                        continue;
+                }
 
                 if (!neighbor.pathfinding_started)
                 {
@@ -143,7 +151,7 @@ Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVect
                 {
                     const int32_t other_cost =
                         current_tile->movement_cost +
-                        Pathfinder::get_distance_cost(neighbor_index - current_tile->map_tile->index) +
+                        Pathfinder::get_distance_cost(neighbor_index - tile_index) +
                         neighbor.map_tile->index.squared_euclidian_distance(target);
                     if (other_cost < neighbor.total_cost)
                         neighbor.setup_pathfinding(current_tile, target);
