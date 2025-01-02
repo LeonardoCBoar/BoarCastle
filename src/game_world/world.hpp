@@ -14,6 +14,7 @@
 #include "../managers/pathfinder.hpp"
 #include "../managers/unit_manager.hpp"
 #include "../utils/vector.hpp"
+#include "../managers/pod/map_tile.hpp"
 
 
 
@@ -21,19 +22,6 @@ class Wall;
 class HoverCamera;
 class CollisionManager;
 class Pathfinder;
-
-class MapTile
-{
-public:
-
-    bool empty = true;
-    boar::IndexVector2 index;
-
-public:
-
-    MapTile();
-    MapTile(boar::IndexVector2 const index);
-};
 
 class World
 {

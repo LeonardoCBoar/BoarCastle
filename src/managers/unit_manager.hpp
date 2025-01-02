@@ -40,6 +40,7 @@ private:
 
     uint64_t next_worker_id = 0;
     std::optional<uint64_t> selected_worker_id = std::nullopt;
+    std::vector<uint64_t> selected_workers;
 
     std::optional<Rect> selection_rect = std::nullopt;
 };

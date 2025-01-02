@@ -94,18 +94,49 @@ void UnitManager::handle_input(const InputData& input_data)
             const Rect selection_rect_index = Rect::from_unoredered_points(
                 mouse_input.selection_start_index.x, mouse_input.selection_start_index.z, mouse_index.x, mouse_index.z);
 
+            this->selected_workers.clear();
             if (selection_rect_index.size_x > 0 || selection_rect_index.size_z > 0)
             {
                 for (auto& worker: this->workers)
+                {
                     worker.selected = worker.index.is_inside_rect(selection_rect_index);
+                    if(worker.selected)
+                        this->selected_workers.push_back(worker.id);
+                }
             }
             break;
         }
         case MouseInputType::RIGHT_CLICK:
         {
-            if (this->selected_worker_id.has_value())
-                this->get_selected_worker()->move_to(mouse_input.index);
-            break;
+            uint64_t selected_worker_id;
+            int32_t k = 0;
+            int32_t unassigned_units = this->workers.size();
+
+            while(true)
+            {
+                for(int32_t x = -k; x <= k; x++)
+                {
+                    const int32_t z = k + 1;
+                    Worker* unit = &this->workers[unassigned_units - 1];
+                    const boar::IndexVector2 unit_target{mouse_index.x + x, mouse_index.z + z};
+                    if(!game_world.collision_manager->is_inside_borders(unit_target))
+                        continue;
+                    
+                    unit->move_to(unit_target);
+                    std::cout << "target for: " << unit->id << " is " << unit_target;
+
+                    unassigned_units--;
+
+                    if(unassigned_units == 0)
+                        goto after;
+                }
+                k++;
+                if(unassigned_units == 0)
+                    goto after;
+            }
+
+            after:
+                break;
         }
         case MouseInputType::MI_NONE:
         {

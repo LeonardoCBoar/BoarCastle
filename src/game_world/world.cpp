@@ -17,10 +17,6 @@
 #include "game_objects/wall.hpp"
 
 
-MapTile::MapTile() = default;
-MapTile::MapTile(boar::IndexVector2 const index): index{index} {}
-
-
 World::World()
 {
     TimeMeasurer world_start{"world"};

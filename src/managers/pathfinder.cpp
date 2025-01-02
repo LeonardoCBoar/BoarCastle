@@ -80,6 +80,7 @@ int32_t Pathfinder::get_distance_cost(boar::IndexVector2 const dir)
 
 Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVector2 target)
 {
+    assert(game_world.collision_manager->is_inside_borders(target));
     const PathfindingTile* const target_tile = &this->map[target.x][target.z];
     if (!target_tile->map_tile->empty)
         return {};

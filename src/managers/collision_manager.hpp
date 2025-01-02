@@ -16,9 +16,7 @@ private:
 public:
 
     CollisionManager(std::array<std::array<MapTile, World::SIZE.z>, World::SIZE.x>& map): map{map} {}
-
-    template <class GameObject>
-    bool can_fit_object(const std::shared_ptr<GameObject> game_object) const
+template <class GameObject> bool can_fit_object(const std::shared_ptr<GameObject> game_object) const
     {
         const int32_t half_size_x = game_object->SIZE.x / 2;
         const int32_t half_size_z = game_object->SIZE.z / 2;
@@ -63,6 +61,38 @@ public:
         return x >= 0 && x < World::SIZE.x && z >= 0 && z < World::SIZE.z;
     }
 
+    // bool can_move_in(const boar::IndexVector2 index) const
+    // {
+    //     const MapTile& tile = this->get_tile(index);
+    //     return tile.collision_state == MapTile::EMPTY || MapTile::UNIT_MOVING_OUT;
+    // }
+
+    MapTile::CollisionState get_tile_collision(const boar::IndexVector2 index) const
+    {
+        return this->get_const_tile(index).collision_state;
+    }
+
+    void reserve_tile(const boar::IndexVector2 index)
+    {
+        MapTile& tile = this->get_tile(index);
+
+        assert(tile.collision_state != MapTile::OCCUPIED);
+        assert(tile.collision_state != MapTile::UNIT_MOVING_IN);
+        assert(tile.collision_state != MapTile::UNIT_MOVING_IN_OUT);
+
+        if(tile.collision_state == MapTile::UNIT_MOVING_OUT)
+            tile.collision_state = MapTile::UNIT_MOVING_IN_OUT;
+        else if(tile.collision_state == MapTile::EMPTY)
+            tile.collision_state = MapTile::UNIT_MOVING_IN;
+    }
+
+    void occupy_tile(const boar::IndexVector2 index)
+    {
+        MapTile& tile = this->get_tile(index);
+        assert(tile.collision_state == MapTile::UNIT_MOVING_IN);
+        tile.collision_state = MapTile::OCCUPIED;
+    }        
+
     template <class VectorT>
     bool is_tile_empty(const VectorT point) const
     {
@@ -75,4 +105,20 @@ public:
         assert(z >= 0 && z < World::SIZE.z);
         return map[x][z].empty;
     }
+
+private:
+    const MapTile& get_const_tile(const boar::IndexVector2 index) const
+    {
+        assert(index.x >= 0 && index.x < World::SIZE.x);
+        assert(index.z >= 0 && index.z < World::SIZE.z);
+        return this->map[index.x][index.z];
+    }
+
+    MapTile& get_tile(const boar::IndexVector2 index)
+    {
+        assert(index.x >= 0 && index.x < World::SIZE.x);
+        assert(index.z >= 0 && index.z < World::SIZE.z);
+        return this->map[index.x][index.z];
+    }
+
 };

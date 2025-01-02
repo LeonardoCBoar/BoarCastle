@@ -84,6 +84,20 @@ bool Worker::try_move_next_tile()
 
 
     this->step_target = this->pop_next_movement();
+    const MapTile::CollisionState step_target_collision = game_world.collision_manager->get_tile_collision(step_target);
+    switch(step_target_collision)
+    {
+        case MapTile::EMPTY:
+        case MapTile::UNIT_MOVING_OUT:
+            game_world.collision_manager->reserve_tile(this->step_target);
+            return true;
+        case MapTile::UNIT_MOVING_IN:
+        case MapTile::UNIT_MOVING_IN_OUT:
+            this->step_progress = 0;
+            return true;
+        case MapTile::OCCUPIED:
+            return false;
+    }
     if (game_world.collision_manager->is_tile_empty(this->step_target))
         return true;
 
