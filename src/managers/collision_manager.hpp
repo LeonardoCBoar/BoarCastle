@@ -26,7 +26,8 @@ template <class GameObject> bool can_fit_object(const std::shared_ptr<GameObject
         {
             for (int32_t z = index.z - half_size_z; z < index.z + half_size_z; z++)
             {
-                if (!this->is_inside_borders(x, z) || !this->is_tile_empty(x, z))
+                const boar::IndexVector2 building_tile{x, z};
+                if (!this->is_inside_borders(x, z) || !this->can_build_on_tile(building_tile))
                     return false;
             }
         }
@@ -45,7 +46,7 @@ template <class GameObject> bool can_fit_object(const std::shared_ptr<GameObject
         {
             for (size_t z = index.z - half_size_z; z < index.z + half_size_z; z++)
             {
-                this->map[x][z].empty = false;
+                this->map[x][z].collision_state = MapTile::BUILDING;
             }
         }
     }
@@ -61,50 +62,59 @@ template <class GameObject> bool can_fit_object(const std::shared_ptr<GameObject
         return x >= 0 && x < World::SIZE.x && z >= 0 && z < World::SIZE.z;
     }
 
-    // bool can_move_in(const boar::IndexVector2 index) const
-    // {
-    //     const MapTile& tile = this->get_tile(index);
-    //     return tile.collision_state == MapTile::EMPTY || MapTile::UNIT_MOVING_OUT;
-    // }
+    bool can_move_to_tile(const boar::IndexVector2 index) const
+    {
+        const MapTile::CollisionState collision = this->get_tile_collision(index);
+        return collision != MapTile::CollisionState::BUILDING;
+    }
+
+    void move_to_tile(const boar::IndexVector2 origin, boar::IndexVector2 target)
+    {
+        MapTile& origin_tile = this->get_tile(origin);
+        assert(origin_tile.collision_state != MapTile::BUILDING);
+        assert(origin_tile.collision_state != MapTile::EMPTY);
+
+        origin_tile.collision_state = MapTile::EMPTY;
+
+        MapTile& target_tile = this->get_tile(target);
+        assert(target_tile.collision_state == MapTile::EMPTY);
+        target_tile.collision_state = MapTile::UNIT_MOVING_IN;
+    }
+
+    void unit_spawn_tile(const boar::IndexVector2 index)
+    {
+        MapTile& tile = this->get_tile(index);
+        assert(tile.collision_state == MapTile::EMPTY);
+
+        tile.collision_state = MapTile::UNIT_IDLE;
+    }
+
+    void unit_occupy_tile(const boar::IndexVector2 index)
+    {
+        MapTile& tile = this->get_tile(index);
+        assert(tile.collision_state == MapTile::UNIT_MOVING_IN);
+
+        tile.collision_state = MapTile::UNIT_IDLE;
+    }        
+
+    bool can_build_on_tile(const boar::IndexVector2 index) const
+    {
+        const MapTile::CollisionState collision = this->get_tile_collision(index);
+        return collision == MapTile::CollisionState::EMPTY;
+    }
+
+    void building_occupy_tile(const boar::IndexVector2 index)
+    {
+        MapTile& tile = this->get_tile(index);
+        assert(tile.collision_state == MapTile::EMPTY);
+        tile.collision_state = MapTile::BUILDING;
+    }        
 
     MapTile::CollisionState get_tile_collision(const boar::IndexVector2 index) const
     {
         return this->get_const_tile(index).collision_state;
     }
 
-    void reserve_tile(const boar::IndexVector2 index)
-    {
-        MapTile& tile = this->get_tile(index);
-
-        assert(tile.collision_state != MapTile::OCCUPIED);
-        assert(tile.collision_state != MapTile::UNIT_MOVING_IN);
-        assert(tile.collision_state != MapTile::UNIT_MOVING_IN_OUT);
-
-        if(tile.collision_state == MapTile::UNIT_MOVING_OUT)
-            tile.collision_state = MapTile::UNIT_MOVING_IN_OUT;
-        else if(tile.collision_state == MapTile::EMPTY)
-            tile.collision_state = MapTile::UNIT_MOVING_IN;
-    }
-
-    void occupy_tile(const boar::IndexVector2 index)
-    {
-        MapTile& tile = this->get_tile(index);
-        assert(tile.collision_state == MapTile::UNIT_MOVING_IN);
-        tile.collision_state = MapTile::OCCUPIED;
-    }        
-
-    template <class VectorT>
-    bool is_tile_empty(const VectorT point) const
-    {
-        return this->is_tile_empty(static_cast<int32_t>(point.x), static_cast<int32_t>(point.z));
-    }
-
-    bool is_tile_empty(const int32_t x, const int32_t z) const
-    {
-        assert(x >= 0 && x < World::SIZE.x);
-        assert(z >= 0 && z < World::SIZE.z);
-        return map[x][z].empty;
-    }
 
 private:
     const MapTile& get_const_tile(const boar::IndexVector2 index) const

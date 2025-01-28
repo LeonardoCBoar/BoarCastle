@@ -60,6 +60,30 @@ void World::render() const
     {
         wall->render();
     }
+    
+    for(const auto& line : this->map)
+    {
+        for(const auto& tile : line)
+        {
+            Vector3 pos{};
+            pos.x = tile.index.x + 0.5;
+            pos.y = 0;
+            pos.z = tile.index.z + 0.5;
+            switch(tile.collision_state)
+            {
+                case(MapTile::CollisionState::EMPTY):
+                    break;
+                case(MapTile::CollisionState::UNIT_IDLE):
+                    DrawCube(pos, 1, 0.1, 1, BLUE);
+                    break;
+                case(MapTile::CollisionState::UNIT_MOVING_IN):
+                    DrawCube(pos, 1, 0.1, 1, YELLOW);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 World::~World()

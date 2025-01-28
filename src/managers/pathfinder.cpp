@@ -4,6 +4,7 @@
 // local
 #include "../game_world/world.hpp"
 #include "collision_manager.hpp"
+#include "pod/map_tile.hpp"
 
 
 
@@ -82,7 +83,7 @@ Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVect
 {
     assert(game_world.collision_manager->is_inside_borders(target));
     const PathfindingTile* const target_tile = &this->map[target.x][target.z];
-    if (!target_tile->map_tile->empty)
+    if (!target_tile->map_tile->empty())
         return {};
 
     std::priority_queue<PathfindingTile*> open{};
@@ -131,15 +132,16 @@ Path Pathfinder::get_path(const boar::IndexVector2 origin, const boar::IndexVect
                     continue;
 
                 PathfindingTile& neighbor = this->map[neighbor_index.x][neighbor_index.z];
+                MapTile::CollisionState neighbor_collision = neighbor.map_tile->collision_state; 
 
-                if (!neighbor.map_tile->empty)
+                if (!neighbor.map_tile->empty())
                     continue;
                 
                 if(x != 0 && z != 0)
                 {
-                    if(!this->map[tile_index.x + x][tile_index.z].map_tile->empty)
+                    if(!this->map[tile_index.x + x][tile_index.z].map_tile->empty())
                         continue;
-                    if(!this->map[tile_index.x][tile_index.z + z].map_tile->empty)
+                    if(!this->map[tile_index.x][tile_index.z + z].map_tile->empty())
                         continue;
                 }
 

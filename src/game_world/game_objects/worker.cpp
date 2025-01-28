@@ -22,7 +22,7 @@ Worker::Worker(boar::IndexVector2 const pos, const uint64_t id):
     id{id}, index{pos}, step_target{pos}, target{pos}, render_pos{static_cast<float>(pos.x), 0.5f,
                                                                   static_cast<float>(pos.z)}
 {
-    game_world.get_tile(this->index)->empty = false;
+    game_world.collision_manager->unit_spawn_tile(this->index);
 }
 
 bool Worker::move_to(boar::IndexVector2 const target)
@@ -79,7 +79,7 @@ boar::IndexVector2 Worker::pop_next_movement()
 
 bool Worker::try_move_next_tile()
 {
-    if (!game_world.collision_manager->is_tile_empty(this->target))
+    if (!game_world.collision_manager->can_move_to_tile(this->target))
         return false;
 
 
@@ -88,17 +88,17 @@ bool Worker::try_move_next_tile()
     switch(step_target_collision)
     {
         case MapTile::EMPTY:
-        case MapTile::UNIT_MOVING_OUT:
-            game_world.collision_manager->reserve_tile(this->step_target);
             return true;
         case MapTile::UNIT_MOVING_IN:
-        case MapTile::UNIT_MOVING_IN_OUT:
             this->step_progress = 0;
             return true;
-        case MapTile::OCCUPIED:
+        case MapTile::BUILDING:
+        case MapTile::UNIT_IDLE:
             return false;
+        default:
+            assert(false);
     }
-    if (game_world.collision_manager->is_tile_empty(this->step_target))
+    if (game_world.collision_manager->can_move_to_tile(this->step_target))
         return true;
 
     do
@@ -110,7 +110,7 @@ bool Worker::try_move_next_tile()
         else
             return false;
 
-    } while (!game_world.collision_manager->is_tile_empty(this->step_target));
+    } while (!game_world.collision_manager->can_move_to_tile(this->step_target));
 
     auto outline_path = game_world.pathfinder->get_path(this->index, this->step_target);
     if (outline_path.empty())
@@ -134,20 +134,26 @@ void Worker::update_movement(const float delta)
     this->step_progress += delta * Worker::MOVE_SPEED / movement_cost;
     while (this->step_progress > 1)
     {
-        // TODO: step target must be reserved at the begining of the movement
-        game_world.get_tile(this->index)->empty = true;
-        game_world.get_tile(this->step_target)->empty = false;
+        const boar::IndexVector2 last_index = this->index;
         this->step_progress -= 1;
         this->index = this->step_target;
         if (this->index == this->target)
         {
             this->current_state = IDLE;
             this->step_progress = 0;
+            std::cout << "A: " << this->id <<  " moved from: " << last_index << " to " << this->index << std::endl;
+            game_world.collision_manager->move_to_tile(last_index, this->index);
+            game_world.collision_manager->unit_occupy_tile(this->target);
         }
         else
         {
             const bool can_continue_moving = try_move_next_tile();
-            if (!can_continue_moving)
+            if(can_continue_moving)
+            {
+                std::cout << "B: " << this->id <<  " moved from: " << last_index << " to " << this->index << std::endl;
+                game_world.collision_manager->move_to_tile(last_index, this->index);
+            }
+            else
             {
                 if (this->target_construction != nullptr)
                     this->close_current_order(NOT_ASSIGNED);
@@ -195,7 +201,7 @@ void Worker::update(const float delta)
                     for (const auto& spot: interaction_spots)
                     {
                         if (!game_world.collision_manager->is_inside_borders(spot) ||
-                            !game_world.collision_manager->is_tile_empty(spot))
+                            !game_world.collision_manager->can_move_to_tile(spot))
                             continue;
 
                         found_path = this->move_to(spot);

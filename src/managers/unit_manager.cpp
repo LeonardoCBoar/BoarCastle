@@ -81,7 +81,7 @@ void UnitManager::handle_input(const InputData& input_data)
         }
         case MouseInputType::SHIFT_LEFT_CLICK:
         {
-            if (game_world.collision_manager->is_tile_empty(mouse_index))
+            if (game_world.collision_manager->can_move_to_tile(mouse_index))
                 this->workers.emplace_back(mouse_index, this->next_worker_id++);
             break;
         }
@@ -114,13 +114,18 @@ void UnitManager::handle_input(const InputData& input_data)
 
             while(true)
             {
+                std::cout << "abc\n";
                 for(int32_t x = -k; x <= k; x++)
                 {
                     const int32_t z = k + 1;
                     Worker* unit = &this->workers[unassigned_units - 1];
                     const boar::IndexVector2 unit_target{mouse_index.x + x, mouse_index.z + z};
                     if(!game_world.collision_manager->is_inside_borders(unit_target))
+                    {
+                        std::cout << unit_target << std::endl;
+                        std::cout <<"www\n";
                         continue;
+                    }
                     
                     unit->move_to(unit_target);
                     std::cout << "target for: " << unit->id << " is " << unit_target;
@@ -131,8 +136,15 @@ void UnitManager::handle_input(const InputData& input_data)
                         goto after;
                 }
                 k++;
+                std::cout << k << std::endl;
                 if(unassigned_units == 0)
                     goto after;
+                if(k > 10)
+                {
+                    std::cout << "FAIL\n";
+                    return;
+
+                }
             }
 
             after:

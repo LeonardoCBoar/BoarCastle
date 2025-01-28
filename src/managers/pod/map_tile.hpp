@@ -10,16 +10,19 @@ public:
     {
         EMPTY,
         UNIT_MOVING_IN,
-        UNIT_MOVING_OUT,
-        UNIT_MOVING_IN_OUT,
-        OCCUPIED,
+        UNIT_IDLE,
+        BUILDING
     };
 
-    bool empty = true;
     CollisionState collision_state = CollisionState::EMPTY;
     boar::IndexVector2 index;
 
 public:
+
+    bool empty() const
+    {
+        return this->collision_state == CollisionState::EMPTY;
+    }
 
     MapTile() = default;
     MapTile(boar::IndexVector2 const index): index{index} {}

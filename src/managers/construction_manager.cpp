@@ -130,7 +130,7 @@ void ConstructionManager::render() const
         for (const auto& spot: interaction_spots)
         {
             if (game_world.collision_manager->is_inside_borders(spot) &&
-                game_world.collision_manager->is_tile_empty(spot))
+                game_world.collision_manager->can_build_on_tile(spot))
             {
                 DrawCube({spot.x + 0.5f, 0, spot.z + 0.5f}, 1, 0.1, 1, YELLOW);
             }
